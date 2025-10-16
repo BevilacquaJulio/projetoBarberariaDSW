@@ -1,0 +1,103 @@
+.navbar {
+  background: var(--secondary-black);
+  border-bottom: 2px solid var(--primary-gold);
+  padding: 15px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+  .navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-brand {
+    a {
+      text-decoration: none;
+      
+      h1 {
+        font-size: 24px;
+        margin: 0;
+        background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
+    font-size: 24px;
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+
+  .navbar-menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      position: absolute;
+      top: 70px;
+      right: 0;
+      left: 0;
+      background: var(--secondary-black);
+      flex-direction: column;
+      padding: 20px;
+      border-top: 1px solid var(--dark-grey);
+      transform: translateY(-200%);
+      opacity: 0;
+      transition: all 0.3s ease;
+
+      &.active {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    a {
+      color: var(--text-grey);
+      text-decoration: none;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      padding: 8px 0;
+
+      &:hover {
+        color: var(--primary-gold);
+      }
+
+      &.active {
+        color: var(--primary-gold);
+        border-bottom: 2px solid var(--primary-gold);
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+      }
+    }
+
+    button {
+      @media (max-width: 768px) {
+        width: 100%;
+      }
+    }
+  }
+}
+

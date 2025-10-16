@@ -1,0 +1,65 @@
+<app-navbar></app-navbar>
+
+<div class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1>Bem-vindo à Barbearia Premium</h1>
+      <p class="subtitle">Estilo, tradição e qualidade em um só lugar</p>
+      <div class="gold-divider"></div>
+      <p class="description">
+        Experimente o melhor serviço de barbearia com profissionais qualificados e ambiente sofisticado.
+      </p>
+      <button class="btn btn-primary" (click)="agendar()">
+        Agende seu horário
+      </button>
+    </div>
+  </div>
+</div>
+
+<section class="servicos-section">
+  <div class="container">
+    <h2 class="text-center">Nossos Serviços</h2>
+    <div class="gold-divider"></div>
+    
+    <div class="grid grid-3 mt-3">
+      @for (servico of servicos; track servico.id) {
+        <div class="card servico-card">
+          <h3>{{ servico.nome }}</h3>
+          <p class="descricao">{{ servico.descricao }}</p>
+          <div class="servico-info">
+            <span class="preco">R$ {{ servico.preco.toFixed(2) }}</span>
+            <span class="duracao">⏱ {{ servico.duracao }} min</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="barbeiros-section">
+  <div class="container">
+    <h2 class="text-center">Nossa Equipe</h2>
+    <div class="gold-divider"></div>
+    
+    <div class="grid grid-3 mt-3">
+      @for (barbeiro of barbeiros; track barbeiro.id) {
+        <div class="card barbeiro-card">
+          <img [src]="barbeiro.foto_url" [alt]="barbeiro.nome" class="barbeiro-foto">
+          <h3>{{ barbeiro.nome }}</h3>
+          <p class="especialidade">{{ barbeiro.especialidade }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container text-center">
+    <h2>Pronto para transformar seu visual?</h2>
+    <p>Agende agora e garanta seu horário com os melhores profissionais</p>
+    <button class="btn btn-primary mt-2" (click)="agendar()">
+      Fazer Agendamento
+    </button>
+  </div>
+</section>
+

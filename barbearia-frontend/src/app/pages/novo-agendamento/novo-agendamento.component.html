@@ -1,0 +1,161 @@
+<app-navbar></app-navbar>
+
+<div class="novo-agendamento-container">
+  <div class="container">
+    <div class="page-header">
+      <h1>Novo Agendamento</h1>
+    </div>
+
+    <div class="gold-divider"></div>
+
+    @if (erro) {
+      <div class="alert alert-danger">
+        {{ erro }}
+      </div>
+    }
+
+    @if (sucesso) {
+      <div class="alert alert-success">
+        {{ sucesso }}
+      </div>
+    }
+
+    <div class="agendamento-form-container">
+      <form (ngSubmit)="agendar()">
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label for="servico">Serviço *</label>
+            <select 
+              id="servico" 
+              class="form-control" 
+              [(ngModel)]="servicoId"
+              name="servico"
+              required
+            >
+              <option [ngValue]="null">Selecione um serviço</option>
+              @for (servico of servicos; track servico.id) {
+                <option [ngValue]="servico.id">
+                  {{ servico.nome }} - R$ {{ servico.preco.toFixed(2) }} ({{ servico.duracao }}min)
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="barbeiro">Barbeiro *</label>
+            <select 
+              id="barbeiro" 
+              class="form-control" 
+              [(ngModel)]="barbeiroId"
+              name="barbeiro"
+              required
+            >
+              <option [ngValue]="null">Selecione um barbeiro</option>
+              @for (barbeiro of barbeiros; track barbeiro.id) {
+                <option [ngValue]="barbeiro.id">
+                  {{ barbeiro.nome }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="data">Data *</label>
+            <input 
+              type="date" 
+              id="data" 
+              class="form-control" 
+              [(ngModel)]="data"
+              name="data"
+              [min]="data"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="hora">Horário *</label>
+            <input 
+              type="time" 
+              id="hora" 
+              class="form-control" 
+              [(ngModel)]="hora"
+              name="hora"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="observacoes">Observações (opcional)</label>
+          <textarea 
+            id="observacoes" 
+            class="form-control" 
+            [(ngModel)]="observacoes"
+            name="observacoes"
+            rows="4"
+            placeholder="Alguma preferência ou observação..."
+          ></textarea>
+        </div>
+
+        @if (getServicoSelecionado() || getBarbeiroSelecionado()) {
+          <div class="resumo-card card">
+            <h3>Resumo do Agendamento</h3>
+            <div class="gold-divider"></div>
+            
+            @if (getServicoSelecionado(); as servico) {
+              <div class="resumo-item">
+                <span class="label">Serviço:</span>
+                <span class="value">{{ servico.nome }}</span>
+              </div>
+              <div class="resumo-item">
+                <span class="label">Valor:</span>
+                <span class="value preco">R$ {{ servico.preco.toFixed(2) }}</span>
+              </div>
+              <div class="resumo-item">
+                <span class="label">Duração:</span>
+                <span class="value">{{ servico.duracao }} minutos</span>
+              </div>
+            }
+
+            @if (getBarbeiroSelecionado(); as barbeiro) {
+              <div class="resumo-item">
+                <span class="label">Barbeiro:</span>
+                <span class="value">{{ barbeiro.nome }}</span>
+              </div>
+              <div class="resumo-item">
+                <span class="label">Especialidade:</span>
+                <span class="value especialidade">{{ barbeiro.especialidade }}</span>
+              </div>
+            }
+
+            @if (data && hora) {
+              <div class="resumo-item">
+                <span class="label">Data/Hora:</span>
+                <span class="value">{{ data | date:'dd/MM/yyyy' }} às {{ hora }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="cancelar()"
+            [disabled]="carregando"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="carregando"
+          >
+            {{ carregando ? 'Agendando...' : 'Confirmar Agendamento' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
