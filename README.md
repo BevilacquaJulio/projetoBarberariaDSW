@@ -2,6 +2,8 @@
 
 Sistema completo de agendamentos para barbearia com backend em Node.js e frontend em Angular. Tema escuro sofisticado com paleta preto e dourado.
 
+Link Figma: https://www.figma.com/design/2rgLlbNZfLD9eZ3I1W9rth/LP---Site-para-vendas-de-mov%C3%A9is--Community-?node-id=4-116&t=7d8Ip3nkebp6jmrS-1
+
 ## 🎨 Design
 
 - **Tema:** Modo escuro (preto e dourado)
