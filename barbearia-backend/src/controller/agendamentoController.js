@@ -1,7 +1,6 @@
 import { Router } from "express"
 import { getAuthentication } from '../utils/jwt.js'
 import * as repo from "../repository/agendamentoRepository.js"
-import * as barbeiroRepo from "../repository/barbeiroRepository.js"
 import * as servicoRepo from "../repository/servicoRepository.js"
 
 const endpoints = Router()
@@ -10,18 +9,11 @@ const autenticador = getAuthentication()
 endpoints.post('/agendamento', autenticador, async (req, resp) => {
   try {
     let agendamento = req.body
-    let usuarioId = req.user.id
+    let clienteId = req.user.id
     
-    if (!agendamento.barbeiro_id || !agendamento.servico_id || !agendamento.data_hora) {
+    if (!agendamento.servico_id || !agendamento.data_hora) {
       return resp.status(400).send({ 
-        erro: 'Campos obrigatórios: barbeiro_id, servico_id, data_hora' 
-      })
-    }
-
-    const barbeiro = await barbeiroRepo.buscarBarbeiro(agendamento.barbeiro_id)
-    if (!barbeiro || !barbeiro.ativo) {
-      return resp.status(400).send({ 
-        erro: 'Barbeiro não encontrado ou inativo' 
+        erro: 'Campos obrigatórios: servico_id, data_hora' 
       })
     }
 
@@ -32,19 +24,21 @@ endpoints.post('/agendamento', autenticador, async (req, resp) => {
       })
     }
 
-    const disponivel = await repo.verificarDisponibilidadeBarbeiro(
-      agendamento.barbeiro_id,
-      agendamento.data_hora,
+    const [data, hora] = agendamento.data_hora.split(' ')
+    
+    const disponivel = await repo.verificarDisponibilidadeHorario(
+      data,
+      hora,
       agendamento.servico_id
     )
 
     if (!disponivel) {
       return resp.status(400).send({ 
-        erro: 'Barbeiro não está disponível neste horário' 
+        erro: 'Horário não disponível' 
       })
     }
 
-    agendamento.usuario_id = usuarioId
+    agendamento.cliente_id = clienteId
 
     let id = await repo.inserirAgendamento(agendamento)
 
@@ -64,8 +58,8 @@ endpoints.post('/agendamento', autenticador, async (req, resp) => {
 
 endpoints.get('/agendamentos', autenticador, async (req, resp) => {
   try {
-    let usuarioId = req.user.id
-    let agendamentos = await repo.listarAgendamentosPorUsuario(usuarioId)
+    let clienteId = req.user.id
+    let agendamentos = await repo.listarAgendamentosPorUsuario(clienteId)
 
     resp.send({
       agendamentos: agendamentos
@@ -80,7 +74,7 @@ endpoints.get('/agendamentos', autenticador, async (req, resp) => {
 
 endpoints.get('/agendamentos/todos', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })
@@ -98,7 +92,7 @@ endpoints.get('/agendamentos/todos', autenticador, async (req, resp) => {
 
 endpoints.get('/agendamentos/data/:data', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })
@@ -130,7 +124,7 @@ endpoints.get('/agendamento/:id', autenticador, async (req, resp) => {
       })
     }
 
-    if (req.user.role !== 'admin' && agendamento.usuario_id !== req.user.id) {
+    if (req.user.role !== 'administrador' && agendamento.cliente_id !== req.user.id) {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })
@@ -156,7 +150,7 @@ endpoints.put('/agendamento/:id/status', autenticador, async (req, resp) => {
       })
     }
 
-    const statusValidos = ['agendado', 'em_andamento', 'concluido', 'cancelado']
+    const statusValidos = ['agendado', 'confirmado', 'em_andamento', 'concluido', 'cancelado']
     if (!statusValidos.includes(status)) {
       return resp.status(400).send({ 
         erro: 'Status inválido' 
@@ -170,7 +164,7 @@ endpoints.put('/agendamento/:id/status', autenticador, async (req, resp) => {
       })
     }
 
-    if (req.user.role !== 'admin' && agendamento.usuario_id !== req.user.id) {
+    if (req.user.role !== 'administrador' && agendamento.cliente_id !== req.user.id) {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })
@@ -207,7 +201,7 @@ endpoints.delete('/agendamento/:id', autenticador, async (req, resp) => {
       })
     }
 
-    if (req.user.role !== 'admin' && agendamento.usuario_id !== req.user.id) {
+    if (req.user.role !== 'administrador' && agendamento.cliente_id !== req.user.id) {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })
@@ -234,4 +228,3 @@ endpoints.delete('/agendamento/:id', autenticador, async (req, resp) => {
 })
 
 export default endpoints
-

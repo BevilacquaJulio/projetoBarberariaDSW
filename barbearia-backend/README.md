@@ -1,6 +1,8 @@
-# 🔧 Backend - Barbearia Premium
+# 🔧 Backend - Sistema Stillus Gama (Salão de Cabeleireira)
 
-API REST completa para sistema de agendamentos de barbearia.
+API REST completa para sistema de agendamentos de salão de beleza.
+
+> ⚠️ **IMPORTANTE:** Este backend foi adaptado para o banco de dados `gv_banco` com estrutura de salão de cabeleireira.
 
 ## 🚀 Tecnologias
 
@@ -25,7 +27,7 @@ cp .env.example .env
 # MYSQL_HOST=localhost
 # MYSQL_USER=root
 # MYSQL_PASSWORD=sua_senha
-# MYSQL_DATABASE=barbearia_db
+# MYSQL_DATABASE=gv_banco
 # JWT_SECRET=chave_secreta
 
 # Criar banco de dados
@@ -46,7 +48,7 @@ src/
 ├── repository/
 │   ├── connection.js         # Conexão MySQL
 │   ├── usuarioRepository.js  # Queries de usuário
-│   ├── barbeiroRepository.js # Queries de barbeiro
+│   ├── (barbeiroRepository - REMOVIDO)
 │   ├── servicoRepository.js  # Queries de serviço
 │   └── agendamentoRepository.js # Queries de agendamento
 ├── controller/

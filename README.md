@@ -1,6 +1,8 @@
-# 💈 Sistema de Barbearia Premium
+# 💈 Sistema de Agendamentos - Stillus Gama (Salão de Cabeleireira)
 
-Sistema completo de agendamentos para barbearia com backend em Node.js e frontend em Angular. Tema escuro sofisticado com paleta preto e dourado.
+Sistema completo de agendamentos para salão de beleza com backend em Node.js e frontend em Angular. Tema escuro sofisticado com paleta preto e dourado.
+
+> ⚠️ **IMPORTANTE:** Projeto adaptado para o banco de dados `gv_banco` com estrutura de salão de cabeleireira.
 
 Link Figma: https://www.figma.com/design/2rgLlbNZfLD9eZ3I1W9rth/LP---Site-para-vendas-de-mov%C3%A9is--Community-?node-id=4-116&t=7d8Ip3nkebp6jmrS-1
 
@@ -90,7 +92,7 @@ cp .env.example .env
 # MYSQL_HOST=localhost
 # MYSQL_USER=root
 # MYSQL_PASSWORD=sua_senha
-# MYSQL_DATABASE=barbearia_db
+# MYSQL_DATABASE=gv_banco
 # JWT_SECRET=chave_secreta_barbearia_123
 
 # Inicie o servidor
