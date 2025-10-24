@@ -3,4 +3,5 @@ node_modules
 /.angular/cache
 .DS_Store
 Thumbs.db
+*.md
 
