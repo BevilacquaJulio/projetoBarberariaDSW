@@ -1,34 +1,61 @@
 <app-navbar></app-navbar>
 
-<div class="hero">
-  <div class="container">
-    <div class="hero-content">
-      <h1>Bem-vindo à Barbearia Premium</h1>
-      <p class="subtitle">Estilo, tradição e qualidade em um só lugar</p>
-      <div class="gold-divider"></div>
-      <p class="description">
-        Experimente o melhor serviço de barbearia com profissionais qualificados e ambiente sofisticado.
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-background">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <div class="logo-container">
+        <img src="assets/img/logo.png" alt="GV Salão" class="logo-hero">
+      </div>
+      <h1 class="hero-title">Stillus Gama</h1>
+      <p class="hero-subtitle">Beleza, Estilo e Transformação</p>
+      <p class="hero-description">
+        Nosso espaço foi desenhado para oferecer uma experiência tranquila, com higiene rigorosa, 
+        atendimento personalizado e equipes capacitadas em cortes, coloração e tratamentos.
       </p>
-      <button class="btn btn-primary" (click)="agendar()">
-        Agende seu horário
+      <button class="btn-hero" (click)="agendar()">
+        Agendar Horário
       </button>
     </div>
   </div>
-</div>
+</section>
 
+<!-- Sobre Section -->
+<section class="sobre-section">
+  <div class="container">
+    <div class="sobre-content">
+      <h2 class="section-title">Sobre</h2>
+      <div class="divider-purple"></div>
+      <p class="sobre-text">
+        Nosso espaço foi desenhado para oferecer uma experiência tranquila, com higiene rigorosa, 
+        atendimento personalizado e equipes capacitadas em cortes, coloração e tratamentos.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Serviços Section -->
 <section class="servicos-section">
   <div class="container">
-    <h2 class="text-center">Nossos Serviços</h2>
-    <div class="gold-divider"></div>
+    <h2 class="section-title text-center">Serviços</h2>
+    <div class="divider-blue"></div>
     
-    <div class="grid grid-3 mt-3">
+    <div class="servicos-grid">
       @for (servico of servicos; track servico.id) {
-        <div class="card servico-card">
-          <h3>{{ servico.nome }}</h3>
-          <p class="descricao">{{ servico.descricao }}</p>
-          <div class="servico-info">
-            <span class="preco">R$ {{ servico.preco.toFixed(2) }}</span>
-            <span class="duracao">⏱ {{ servico.duracao }} min</span>
+        <div class="servico-card">
+          <div class="servico-image">
+            <div class="servico-overlay">
+              <span class="servico-duracao">{{ servico.duracao }} min</span>
+            </div>
+          </div>
+          <div class="servico-content">
+            <h3>{{ servico.nome }}</h3>
+            <p class="servico-descricao">{{ servico.descricao }}</p>
+            <div class="servico-footer">
+              <span class="servico-preco">R$ {{ servico.preco.toFixed(2) }}</span>
+              <button class="btn-agendar" (click)="agendar()">Agendar</button>
+            </div>
           </div>
         </div>
       }
@@ -36,29 +63,63 @@
   </div>
 </section>
 
-<section class="barbeiros-section">
+<!-- Depoimentos Section -->
+<section class="depoimentos-section">
   <div class="container">
-    <h2 class="text-center">Nossa Equipe</h2>
-    <div class="gold-divider"></div>
+    <h2 class="section-title text-center">Depoimentos</h2>
+    <div class="divider-purple"></div>
     
-    <div class="grid grid-3 mt-3">
-      @for (barbeiro of barbeiros; track barbeiro.id) {
-        <div class="card barbeiro-card">
-          <img [src]="barbeiro.foto_url" [alt]="barbeiro.nome" class="barbeiro-foto">
-          <h3>{{ barbeiro.nome }}</h3>
-          <p class="especialidade">{{ barbeiro.especialidade }}</p>
-        </div>
-      }
+    <div class="depoimentos-grid">
+      <div class="depoimento-card">
+        <p class="depoimento-texto">
+          "Guilherme é um excelente profissional! O amigo a quem confio tudo de cabelo. Um excelente atendimento sempre que vou, algo do cumprimento que quero e me deu. Obrigado Gui!" ❤️
+        </p>
+        <p class="depoimento-autor">- Luzia Nunes</p>
+      </div>
+      
+      <div class="depoimento-card">
+        <p class="depoimento-texto">
+          "Profissional incrível! Sempre muito atencioso e me deixa impressionante. Cada corte é feito com dedicação e bom gosto - são sempre elogios!" 😊
+        </p>
+        <p class="depoimento-autor">- Thayane Melo</p>
+      </div>
+      
+      <div class="depoimento-card">
+        <p class="depoimento-texto">
+          "Guilherme é maravilhoso, cuida da minha mãe com muito carinho! Ama a arte. Confio meus cachos de silho fechados a ele." 💜
+        </p>
+        <p class="depoimento-autor">- Paula Freitas</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="cta-section">
-  <div class="container text-center">
-    <h2>Pronto para transformar seu visual?</h2>
-    <p>Agende agora e garanta seu horário com os melhores profissionais</p>
-    <button class="btn btn-primary mt-2" (click)="agendar()">
-      Fazer Agendamento
+<!-- Reservas Section -->
+<section class="reservas-section">
+  <div class="container">
+    <h2 class="section-title text-center">Reservas</h2>
+    <div class="divider-blue"></div>
+    
+    <div class="reservas-content">
+      <p class="reservas-text">
+        Para confirmar sua reserva de horário, é necessário um sinal de R$100,00. 💵<br>
+        O valor restante pode ser pago antes do atendimento ou no próprio dia do serviço. ✨
+      </p>
+      <button class="btn-reserva" (click)="agendar()">
+        Fazer Reserva
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Final Section -->
+<section class="cta-final-section">
+  <div class="cta-overlay"></div>
+  <div class="container cta-content">
+    <h2>Pronta para transformar seu visual?</h2>
+    <p>Agende agora e garanta seu horário!</p>
+    <button class="btn-cta-final" (click)="agendar()">
+      Agendar Agora
     </button>
   </div>
 </section>
