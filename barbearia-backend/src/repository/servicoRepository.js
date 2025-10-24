@@ -2,7 +2,7 @@ import { connection } from './connection.js'
 
 export async function inserirServico(servico) {
   const comando = `
-    INSERT INTO servico (nome, descricao, preco, duracao, ativo)
+    INSERT INTO servicos (nome, descricao, preco, duracao, ativo)
     VALUES (?, ?, ?, ?, ?)
   `
   const [info] = await connection.query(comando, [
@@ -17,7 +17,7 @@ export async function inserirServico(servico) {
 
 export async function listarServicos() {
   const comando = `
-    SELECT * FROM servico
+    SELECT * FROM servicos
      WHERE ativo = TRUE
      ORDER BY preco
   `
@@ -27,7 +27,7 @@ export async function listarServicos() {
 
 export async function listarTodosServicos() {
   const comando = `
-    SELECT * FROM servico
+    SELECT * FROM servicos
      ORDER BY nome
   `
   const [registros] = await connection.query(comando)
@@ -36,7 +36,7 @@ export async function listarTodosServicos() {
 
 export async function buscarServico(id) {
   const comando = `
-    SELECT * FROM servico
+    SELECT * FROM servicos
      WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
@@ -45,7 +45,7 @@ export async function buscarServico(id) {
 
 export async function alterarServico(id, servico) {
   const comando = `
-    UPDATE servico 
+    UPDATE servicos 
        SET nome = ?, 
            descricao = ?,
            preco = ?,
@@ -66,7 +66,7 @@ export async function alterarServico(id, servico) {
 
 export async function deletarServico(id) {
   const comando = `
-    DELETE FROM servico WHERE id = ?
+    DELETE FROM servicos WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
   return registro.affectedRows

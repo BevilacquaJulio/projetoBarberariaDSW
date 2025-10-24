@@ -6,7 +6,7 @@ export async function validarCredenciais(email, senha) {
            nome,
            email,
            role
-      FROM usuario
+      FROM usuarios
      WHERE email = ?
        AND senha = MD5(?)
   `
@@ -17,7 +17,7 @@ export async function validarCredenciais(email, senha) {
 
 export async function criarConta(novoUsuario) {
   const comando = `
-    INSERT INTO usuario (nome, email, senha, telefone, role)
+    INSERT INTO usuarios (nome, email, senha, telefone, role)
                VALUES (?, ?, MD5(?), ?, ?)
   `
 
@@ -34,7 +34,7 @@ export async function criarConta(novoUsuario) {
 export async function buscarUsuarioPorId(id) {
   const comando = `
     SELECT id, nome, email, telefone, role, criado_em
-      FROM usuario
+      FROM usuarios
      WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
@@ -44,7 +44,7 @@ export async function buscarUsuarioPorId(id) {
 export async function listarUsuarios() {
   const comando = `
     SELECT id, nome, email, telefone, role, criado_em
-      FROM usuario
+      FROM usuarios
   `
   const [registros] = await connection.query(comando)
   return registros
@@ -52,7 +52,7 @@ export async function listarUsuarios() {
 
 export async function verificarEmailExistente(email) {
   const comando = `
-    SELECT COUNT(*) as total FROM usuario WHERE email = ?
+    SELECT COUNT(*) as total FROM usuarios WHERE email = ?
   `
   const [registro] = await connection.query(comando, [email])
   return registro[0].total > 0

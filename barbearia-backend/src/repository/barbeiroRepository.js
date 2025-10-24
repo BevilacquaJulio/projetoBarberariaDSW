@@ -2,7 +2,7 @@ import { connection } from './connection.js'
 
 export async function inserirBarbeiro(barbeiro) {
   const comando = `
-    INSERT INTO barbeiro (nome, especialidade, foto_url, ativo)
+    INSERT INTO barbeiros (nome, especialidade, foto_url, ativo)
     VALUES (?, ?, ?, ?)
   `
   const [info] = await connection.query(comando, [
@@ -16,7 +16,7 @@ export async function inserirBarbeiro(barbeiro) {
 
 export async function listarBarbeiros() {
   const comando = `
-    SELECT * FROM barbeiro
+    SELECT * FROM barbeiros
      WHERE ativo = TRUE
      ORDER BY nome
   `
@@ -26,7 +26,7 @@ export async function listarBarbeiros() {
 
 export async function listarTodosBarbeiros() {
   const comando = `
-    SELECT * FROM barbeiro
+    SELECT * FROM barbeiros
      ORDER BY nome
   `
   const [registros] = await connection.query(comando)
@@ -35,7 +35,7 @@ export async function listarTodosBarbeiros() {
 
 export async function buscarBarbeiro(id) {
   const comando = `
-    SELECT * FROM barbeiro
+    SELECT * FROM barbeiros
      WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
@@ -44,7 +44,7 @@ export async function buscarBarbeiro(id) {
 
 export async function alterarBarbeiro(id, barbeiro) {
   const comando = `
-    UPDATE barbeiro 
+    UPDATE barbeiros 
        SET nome = ?, 
            especialidade = ?,
            foto_url = ?,
@@ -63,7 +63,7 @@ export async function alterarBarbeiro(id, barbeiro) {
 
 export async function deletarBarbeiro(id) {
   const comando = `
-    DELETE FROM barbeiro WHERE id = ?
+    DELETE FROM barbeiros WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
   return registro.affectedRows
@@ -72,11 +72,11 @@ export async function deletarBarbeiro(id) {
 export async function verificarDisponibilidadeBarbeiro(barbeiroId, dataHora, duracao) {
   const comando = `
     SELECT COUNT(*) as total 
-      FROM agendamento 
+      FROM agendamentos 
      WHERE barbeiro_id = ? 
        AND status IN ('agendado', 'em_andamento')
        AND (
-         (data_hora <= ? AND DATE_ADD(data_hora, INTERVAL (SELECT duracao FROM servico WHERE id = servico_id) MINUTE) > ?) OR
+         (data_hora <= ? AND DATE_ADD(data_hora, INTERVAL (SELECT duracao FROM servicos WHERE id = servico_id) MINUTE) > ?) OR
          (data_hora < DATE_ADD(?, INTERVAL ? MINUTE) AND data_hora >= ?)
        )
   `

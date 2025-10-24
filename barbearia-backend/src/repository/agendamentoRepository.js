@@ -2,7 +2,7 @@ import { connection } from './connection.js'
 
 export async function inserirAgendamento(agendamento) {
   const comando = `
-    INSERT INTO agendamento (usuario_id, barbeiro_id, servico_id, data_hora, status, observacoes)
+    INSERT INTO agendamentos (usuario_id, barbeiro_id, servico_id, data_hora, status, observacoes)
     VALUES (?, ?, ?, ?, ?, ?)
   `
   const [info] = await connection.query(comando, [
@@ -29,7 +29,7 @@ export async function listarAgendamentosPorUsuario(usuarioId) {
       s.nome as servico_nome,
       s.preco as servico_preco,
       s.duracao as servico_duracao
-    FROM agendamento a
+    FROM agendamentos a
     JOIN barbeiro b ON a.barbeiro_id = b.id
     JOIN servico s ON a.servico_id = s.id
     WHERE a.usuario_id = ?
@@ -53,7 +53,7 @@ export async function listarTodosAgendamentos() {
       s.nome as servico_nome,
       s.preco as servico_preco,
       s.duracao as servico_duracao
-    FROM agendamento a
+    FROM agendamentos a
     JOIN usuario u ON a.usuario_id = u.id
     JOIN barbeiro b ON a.barbeiro_id = b.id
     JOIN servico s ON a.servico_id = s.id
@@ -73,7 +73,7 @@ export async function buscarAgendamento(id) {
       s.nome as servico_nome,
       s.preco as servico_preco,
       s.duracao as servico_duracao
-    FROM agendamento a
+    FROM agendamentos a
     JOIN usuario u ON a.usuario_id = u.id
     JOIN barbeiro b ON a.barbeiro_id = b.id
     JOIN servico s ON a.servico_id = s.id
@@ -85,7 +85,7 @@ export async function buscarAgendamento(id) {
 
 export async function alterarStatusAgendamento(id, status) {
   const comando = `
-    UPDATE agendamento 
+    UPDATE agendamentos
        SET status = ?
      WHERE id = ?
   `
@@ -95,7 +95,7 @@ export async function alterarStatusAgendamento(id, status) {
 
 export async function deletarAgendamento(id) {
   const comando = `
-    DELETE FROM agendamento WHERE id = ?
+    DELETE FROM agendamentos WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
   return registro.affectedRows
@@ -103,7 +103,7 @@ export async function deletarAgendamento(id) {
 
 export async function verificarProprietarioAgendamento(id, usuarioId) {
   const comando = `
-    SELECT COUNT(*) as total FROM agendamento 
+    SELECT COUNT(*) as total FROM agendamentos 
      WHERE id = ? AND usuario_id = ?
   `
   const [registro] = await connection.query(comando, [id, usuarioId])
@@ -113,7 +113,7 @@ export async function verificarProprietarioAgendamento(id, usuarioId) {
 export async function verificarDisponibilidadeBarbeiro(barbeiroId, dataHora, servicoId, agendamentoId = null) {
   let comando = `
     SELECT COUNT(*) as total 
-      FROM agendamento a
+      FROM agendamentos a
       JOIN servico s ON a.servico_id = s.id
      WHERE a.barbeiro_id = ? 
        AND a.status IN ('agendado', 'em_andamento')
@@ -144,7 +144,7 @@ export async function listarAgendamentosPorData(data) {
       b.nome as barbeiro_nome,
       s.nome as servico_nome,
       s.duracao as servico_duracao
-    FROM agendamento a
+    FROM agendamentos a
     JOIN usuario u ON a.usuario_id = u.id
     JOIN barbeiro b ON a.barbeiro_id = b.id
     JOIN servico s ON a.servico_id = s.id
