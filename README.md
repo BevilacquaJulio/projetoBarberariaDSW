@@ -4,6 +4,12 @@ Sistema completo de agendamentos para barbearia com backend em Node.js e fronten
 
 Link Figma: https://www.figma.com/design/2rgLlbNZfLD9eZ3I1W9rth/LP---Site-para-vendas-de-mov%C3%A9is--Community-?node-id=4-116&t=7d8Ip3nkebp6jmrS-1
 
+##🏦 **Modelagem De Dados**
+
+Modelo que representa a estrutura do projeto e seu banco de dados
+
+https://drive.google.com/file/d/13yRAYCOJ1JwzzosXUJ-v2a-CXSfEpQQJ/view
+
 ## 🎨 Design
 
 - **Tema:** Modo escuro (preto e dourado)
