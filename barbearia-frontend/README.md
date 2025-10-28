@@ -1,6 +1,6 @@
 # 🎨 Frontend - Barbearia Premium
 
-Interface moderna em Angular com tema escuro (preto e dourado).
+Interface moderna em Angular com tema claro e gradientes roxo/azul.
 
 ## 🚀 Tecnologias
 
@@ -65,16 +65,36 @@ src/
 
 ## 🎨 Tema e Cores
 
-### Paleta
+### Paleta Principal
 ```scss
---primary-black: #0a0a0a      // Fundo principal
---secondary-black: #1a1a1a    // Fundo cards
---dark-grey: #2a2a2a          // Inputs
---primary-gold: #d4af37       // Dourado principal
---secondary-gold: #f4d03f     // Dourado hover
---text-white: #ffffff         // Texto branco
---text-grey: #b0b0b0          // Texto secundário
+--primary-purple: #7c3aed     // Roxo principal
+--secondary-purple: #a78bfa   // Roxo secundário
+--dark-purple: #5b21b6        // Roxo escuro
+--hover-purple: #6d28d9       // Roxo hover
+
+--primary-blue: #3b82f6      // Azul principal
+--secondary-blue: #60a5fa     // Azul secundário
+--dark-blue: #1e40af         // Azul escuro
 ```
+
+### Fundos e Textos
+```scss
+--light-bg: #f9fafb          // Fundo claro
+--text-white: #ffffff        // Texto branco
+--text-grey: #9ca3af         // Texto cinza
+--text-dark: #1f2937         // Texto escuro
+```
+
+### Elementos UI
+```scss
+--success: #10b981           // Verde sucesso
+--danger: #ef4444            // Vermelho erro
+--warning: #f59e0b           // Amarelo alerta
+```
+
+### Gradientes Utilizados
+- Botões: `linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)`
+- Scrollbar: `linear-gradient(180deg, #7c3aed, #3b82f6)`
 
 ### Fontes
 - **Playfair Display**: Títulos (serif elegante)
@@ -240,8 +260,8 @@ Breakpoint: `768px`
 
 ### Botões
 ```html
-<button class="btn btn-primary">    <!-- Dourado -->
-<button class="btn btn-secondary">  <!-- Borda dourada -->
+<button class="btn btn-primary">    <!-- Gradiente roxo/azul -->
+<button class="btn btn-secondary">  <!-- Borda roxa -->
 <button class="btn btn-danger">     <!-- Vermelho -->
 ```
 
@@ -392,8 +412,8 @@ server {
 Edite `src/styles.scss`:
 ```scss
 :root {
-  --primary-gold: #YOUR_COLOR;
-  --secondary-gold: #YOUR_COLOR;
+  --primary-purple: #YOUR_COLOR;
+  --primary-blue: #YOUR_COLOR;
 }
 ```
 
