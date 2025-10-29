@@ -2,14 +2,14 @@ import { connection } from './connection.js'
 
 export async function inserirServico(servico) {
   const comando = `
-    INSERT INTO servicos (nome, descricao, preco, duracao, ativo)
+    INSERT INTO servicos (nome, descricao, preco, duracao_minutos, ativo)
     VALUES (?, ?, ?, ?, ?)
   `
   const [info] = await connection.query(comando, [
     servico.nome,
     servico.descricao || null,
     servico.preco,
-    servico.duracao,
+    servico.duracao_minutos || servico.duracao,
     servico.ativo !== undefined ? servico.ativo : true
   ])
   return info.insertId
@@ -17,7 +17,8 @@ export async function inserirServico(servico) {
 
 export async function listarServicos() {
   const comando = `
-    SELECT * FROM servicos
+    SELECT id, nome, descricao, preco, duracao_minutos as duracao, ativo
+      FROM servicos
      WHERE ativo = TRUE
      ORDER BY preco
   `
@@ -27,7 +28,8 @@ export async function listarServicos() {
 
 export async function listarTodosServicos() {
   const comando = `
-    SELECT * FROM servicos
+    SELECT id, nome, descricao, preco, duracao_minutos as duracao, ativo
+      FROM servicos
      ORDER BY nome
   `
   const [registros] = await connection.query(comando)
@@ -36,7 +38,8 @@ export async function listarTodosServicos() {
 
 export async function buscarServico(id) {
   const comando = `
-    SELECT * FROM servicos
+    SELECT id, nome, descricao, preco, duracao_minutos as duracao, ativo
+      FROM servicos
      WHERE id = ?
   `
   const [registro] = await connection.query(comando, [id])
@@ -49,7 +52,7 @@ export async function alterarServico(id, servico) {
        SET nome = ?, 
            descricao = ?,
            preco = ?,
-           duracao = ?,
+           duracao_minutos = ?,
            ativo = ?
      WHERE id = ?
   `
@@ -57,7 +60,7 @@ export async function alterarServico(id, servico) {
     servico.nome,
     servico.descricao,
     servico.preco,
-    servico.duracao,
+    servico.duracao_minutos || servico.duracao,
     servico.ativo,
     id
   ])

@@ -1,443 +1,321 @@
-# 🎨 Frontend - Barbearia Premium
+# 💈 Sistema de Agendamentos - Stillus Gama (Salão de Cabeleireira)
 
-Interface moderna em Angular com tema claro e gradientes roxo/azul.
+Sistema completo de agendamentos para salão de beleza com backend em Node.js e frontend em Angular. Tema escuro sofisticado com paleta preto e dourado.
+
+> ⚠️ **IMPORTANTE:** Projeto adaptado para o banco de dados `gv_banco` com estrutura de salão de cabeleireira.
+
+Link Figma: https://www.figma.com/design/2rgLlbNZfLD9eZ3I1W9rth/LP---Site-para-vendas-de-mov%C3%A9is--Community-?node-id=4-116&t=7d8Ip3nkebp6jmrS-1
+
+## 🎨 Design
+
+- **Tema:** Modo escuro (preto e dourado)
+- **Paleta de cores:**
+  - Preto primário: `#0a0a0a`
+  - Preto secundário: `#1a1a1a`
+  - Dourado primário: `#d4af37`
+  - Dourado secundário: `#f4d03f`
+- **Fontes:** 
+  - Playfair Display (títulos)
+  - Poppins (texto)
 
 ## 🚀 Tecnologias
 
+### Backend
+- Node.js + Express
+- MySQL
+- JWT para autenticação
+- Arquitetura Controller/Repository
+
+### Frontend
 - Angular 17 (standalone components)
-- TypeScript
 - SCSS
 - RxJS
 - HttpClient
-- Router Guards
-- HTTP Interceptors
 
-## 📋 Instalação
+## 📋 Funcionalidades
 
-```bash
-# Instalar Angular CLI globalmente
-npm install -g @angular/cli
+### Autenticação
+- ✅ Cadastro de usuários
+- ✅ Login com JWT
+- ✅ Proteção de rotas
+- ✅ Interceptor HTTP automático
 
-# Instalar dependências
-npm install
+### Gestão de Agendamentos
+- ✅ Criar novo agendamento
+- ✅ Listar agendamentos do usuário
+- ✅ Cancelar agendamento
+- ✅ Deletar agendamento
+- ✅ Verificação de disponibilidade de barbeiro
 
-# Iniciar servidor de desenvolvimento
-npm start
-# ou
-ng serve
-```
-
-Acesse `http://localhost:4200`
-
-## 📁 Estrutura
-
-```
-src/
-├── app/
-│   ├── core/
-│   │   ├── guards/
-│   │   │   └── auth.guard.ts          # Protege rotas privadas
-│   │   ├── interceptors/
-│   │   │   └── auth.interceptor.ts    # Adiciona token nas requisições
-│   │   └── services/
-│   │       ├── auth.service.ts        # Autenticação
-│   │       ├── barbeiro.service.ts    # API barbeiros
-│   │       ├── servico.service.ts     # API serviços
-│   │       └── agendamento.service.ts # API agendamentos
-│   ├── pages/
-│   │   ├── home/                      # Página inicial
-│   │   ├── login/                     # Login
-│   │   ├── cadastro/                  # Cadastro
-│   │   ├── dashboard/                 # Dashboard do usuário
-│   │   ├── agendamentos/              # Lista agendamentos
-│   │   └── novo-agendamento/          # Criar agendamento
-│   ├── shared/
-│   │   └── components/
-│   │       └── navbar/                # Menu de navegação
-│   ├── app.component.ts               # Componente raiz
-│   └── app.routes.ts                  # Rotas da aplicação
-├── environments/
-│   ├── environment.ts                 # Config desenvolvimento
-│   └── environment.prod.ts            # Config produção
-├── styles.scss                        # Estilos globais
-└── index.html                         # HTML principal
-```
-
-## 🎨 Tema e Cores
-
-### Paleta Principal
-```scss
---primary-purple: #7c3aed     // Roxo principal
---secondary-purple: #a78bfa   // Roxo secundário
---dark-purple: #5b21b6        // Roxo escuro
---hover-purple: #6d28d9       // Roxo hover
-
---primary-blue: #3b82f6      // Azul principal
---secondary-blue: #60a5fa     // Azul secundário
---dark-blue: #1e40af         // Azul escuro
-```
-
-### Fundos e Textos
-```scss
---light-bg: #f9fafb          // Fundo claro
---text-white: #ffffff        // Texto branco
---text-grey: #9ca3af         // Texto cinza
---text-dark: #1f2937         // Texto escuro
-```
-
-### Elementos UI
-```scss
---success: #10b981           // Verde sucesso
---danger: #ef4444            // Vermelho erro
---warning: #f59e0b           // Amarelo alerta
-```
-
-### Gradientes Utilizados
-- Botões: `linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)`
-- Scrollbar: `linear-gradient(180deg, #7c3aed, #3b82f6)`
-
-### Fontes
-- **Playfair Display**: Títulos (serif elegante)
-- **Poppins**: Texto geral (sans-serif moderna)
-
-## 🔐 Autenticação
-
-### AuthService
-
-```typescript
-// Login
-authService.login(email, senha).subscribe(response => {
-  // Token e usuário salvos automaticamente
-  // Redireciona para dashboard
-})
-
-// Logout
-authService.logout()  // Limpa localStorage e redireciona
-
-// Verificar autenticação
-authService.isAuthenticated()  // true/false
-
-// Obter usuário logado
-authService.getUsuario()  // { id, nome, email, role }
-
-// Verificar admin
-authService.isAdmin()  // true/false
-```
-
-### AuthGuard
-
-Protege rotas automaticamente:
-
-```typescript
-{
-  path: 'dashboard',
-  component: DashboardComponent,
-  canActivate: [authGuard]  // Só acessa se autenticado
-}
-```
-
-### AuthInterceptor
-
-Adiciona token automaticamente em todas requisições:
-
-```typescript
-// Interceptor pega token do localStorage
-// Adiciona header: x-access-token: [TOKEN]
-// Você não precisa fazer nada!
-```
-
-## 📡 Services (API)
-
-### BarbeiroService
-```typescript
-listar(): Observable<{ barbeiros: Barbeiro[] }>
-buscar(id: number): Observable<Barbeiro>
-```
-
-### ServicoService
-```typescript
-listar(): Observable<{ servicos: Servico[] }>
-buscar(id: number): Observable<Servico>
-```
-
-### AgendamentoService
-```typescript
-criar(agendamento: Agendamento): Observable<any>
-listarMeus(): Observable<{ agendamentos: Agendamento[] }>
-buscar(id: number): Observable<Agendamento>
-alterarStatus(id: number, status: string): Observable<any>
-deletar(id: number): Observable<any>
-```
-
-## 🧩 Componentes
-
-### Home
-- Hero section
-- Lista de serviços
-- Lista de barbeiros
-- CTA para agendamento
-
-### Login
-- Formulário email/senha
-- Validações
-- Mensagens de erro
-- Redirecionamento pós-login
-
-### Cadastro
-- Formulário completo
-- Validação de senhas
-- Verificação de email duplicado
-- Mensagem de sucesso
+### Catálogo
+- ✅ Lista de serviços com preços
+- ✅ Lista de barbeiros com especialidades
+- ✅ Informações detalhadas
 
 ### Dashboard
-- Cards com estatísticas
-- Próximos agendamentos
-- Ações rápidas
+- ✅ Visão geral dos agendamentos
+- ✅ Estatísticas
+- ✅ Próximos agendamentos
 
-### Agendamentos
-- Lista completa
-- Badges de status
-- Cancelar/Deletar
-- Filtros por status
+## 🛠️ Setup do Projeto
 
-### NovoAgendamento
-- Seleção de serviço
-- Seleção de barbeiro
-- Data e hora
-- Resumo do agendamento
-- Validação de disponibilidade
+### Pré-requisitos
+- Node.js (v18 ou superior)
+- MySQL (v8 ou superior)
+- npm ou yarn
+- Angular CLI (`npm install -g @angular/cli`)
 
-### Navbar
-- Logo
-- Links principais
-- Menu responsivo
-- Logout
-- Condicional (autenticado/não autenticado)
+### 1. Configurar Banco de Dados
 
-## 🎯 Rotas
-
-```typescript
-/home              → Página inicial (público)
-/login             → Login (público)
-/cadastro          → Cadastro (público)
-/dashboard         → Dashboard (protegido)
-/agendamentos      → Meus agendamentos (protegido)
-/novo-agendamento  → Criar agendamento (protegido)
-```
-
-## 📱 Responsivo
-
-Breakpoint: `768px`
-
-### Mobile
-- Menu hamburger
-- Cards em coluna
-- Botões full-width
-- Fontes reduzidas
-
-### Desktop
-- Menu horizontal
-- Grid 2-3 colunas
-- Botões inline
-- Fontes normais
-
-## 🎨 Classes Utilitárias
-
-### Layout
-```html
-<div class="container">      <!-- Max-width 1200px -->
-<div class="grid grid-2">    <!-- Grid 2 colunas -->
-<div class="grid grid-3">    <!-- Grid 3 colunas -->
-```
-
-### Espaçamento
-```html
-<div class="mt-1">  <!-- margin-top: 10px -->
-<div class="mt-2">  <!-- margin-top: 20px -->
-<div class="mt-3">  <!-- margin-top: 30px -->
-<div class="mb-1">  <!-- margin-bottom: 10px -->
-```
-
-### Botões
-```html
-<button class="btn btn-primary">    <!-- Gradiente roxo/azul -->
-<button class="btn btn-secondary">  <!-- Borda roxa -->
-<button class="btn btn-danger">     <!-- Vermelho -->
-```
-
-### Cards
-```html
-<div class="card">  <!-- Card padrão com hover -->
-```
-
-### Alertas
-```html
-<div class="alert alert-success">  <!-- Verde -->
-<div class="alert alert-danger">   <!-- Vermelho -->
-<div class="alert alert-warning">  <!-- Amarelo -->
-```
-
-### Formulários
-```html
-<div class="form-group">
-  <label>Nome</label>
-  <input type="text" class="form-control">
-</div>
-```
-
-## 🔄 Fluxo de Dados
-
-### 1. Componente chama Service
-```typescript
-this.servicoService.listar().subscribe({
-  next: (response) => {
-    this.servicos = response.servicos
-  },
-  error: (err) => console.error(err)
-})
-```
-
-### 2. Service faz requisição HTTP
-```typescript
-return this.http.get<{ servicos: Servico[] }>(`${apiUrl}/servicos`)
-```
-
-### 3. Interceptor adiciona token
-```typescript
-// Automático! Pega do localStorage
-```
-
-### 4. Backend responde
-```json
-{
-  "servicos": [
-    { "id": 1, "nome": "Corte", "preco": 45.00 }
-  ]
-}
-```
-
-### 5. Componente renderiza
-```html
-@for (servico of servicos; track servico.id) {
-  <div>{{ servico.nome }}</div>
-}
-```
-
-## 🚨 Tratamento de Erros
-
-### No Component
-```typescript
-this.service.criar(dados).subscribe({
-  next: (response) => {
-    this.sucesso = 'Criado com sucesso!'
-  },
-  error: (err) => {
-    this.erro = err.error?.erro || 'Erro ao criar'
-  }
-})
-```
-
-### No Template
-```html
-@if (erro) {
-  <div class="alert alert-danger">
-    {{ erro }}
-  </div>
-}
-
-@if (sucesso) {
-  <div class="alert alert-success">
-    {{ sucesso }}
-  </div>
-}
-```
-
-## 🎯 Boas Práticas
-
-1. **Standalone Components** - Todos são standalone
-2. **Lazy Loading** - Páginas carregadas sob demanda
-3. **TypeScript Strict** - Tipos rigorosos
-4. **RxJS** - Observables para async
-5. **SCSS** - Variáveis CSS e nesting
-6. **Responsivo** - Mobile-first
-7. **Acessibilidade** - Labels, alt text
-8. **Performance** - Track by em loops
-
-## 🧪 Desenvolvimento
-
-### Comandos úteis
 ```bash
-ng serve              # Dev server
-ng build              # Build produção
-ng test               # Testes unitários
-ng generate component # Novo componente
+# Entre no MySQL
+mysql -u root -p
+
+# Execute o script SQL
+source barbearia-backend/src/sql/ddl.sql
 ```
 
-### Criar novo componente
+### 2. Backend (Node.js)
+
 ```bash
-ng generate component pages/minha-pagina --standalone
+# Entre na pasta do backend
+cd barbearia-backend
+
+# Instale as dependências
+npm install
+
+# Crie o arquivo .env (copie do .env.example)
+cp .env.example .env
+
+# Edite o .env com suas credenciais do MySQL
+# PORT=3000
+# MYSQL_HOST=localhost
+# MYSQL_USER=root
+# MYSQL_PASSWORD=sua_senha
+# MYSQL_DATABASE=gv_banco
+# JWT_SECRET=chave_secreta_barbearia_123
+
+# Inicie o servidor
+npm start
 ```
 
-### Criar novo service
+O backend estará rodando em `http://localhost:3000`
+
+### 3. Frontend (Angular)
+
 ```bash
-ng generate service core/services/meu-service
+# Entre na pasta do frontend
+cd barbearia-frontend
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm start
 ```
+
+O frontend estará rodando em `http://localhost:4200`
+
+## 📁 Estrutura do Projeto
+
+### Backend
+```
+barbearia-backend/
+├── src/
+│   ├── app.js                    # Servidor Express
+│   ├── rotas.js                  # Registro de rotas
+│   ├── utils/
+│   │   └── jwt.js                # Funções JWT
+│   ├── repository/
+│   │   ├── connection.js         # Conexão MySQL
+│   │   ├── usuarioRepository.js
+│   │   ├── barbeiroRepository.js
+│   │   ├── servicoRepository.js
+│   │   └── agendamentoRepository.js
+│   ├── controller/
+│   │   ├── usuarioController.js
+│   │   ├── barbeiroController.js
+│   │   ├── servicoController.js
+│   │   └── agendamentoController.js
+│   └── sql/
+│       └── ddl.sql               # Script banco de dados
+├── package.json
+└── .env
+```
+
+### Frontend
+```
+barbearia-frontend/
+├── src/
+│   ├── app/
+│   │   ├── core/
+│   │   │   ├── guards/           # Proteção de rotas
+│   │   │   ├── interceptors/     # HTTP interceptors
+│   │   │   └── services/         # Serviços API
+│   │   ├── pages/                # Páginas
+│   │   │   ├── home/
+│   │   │   ├── login/
+│   │   │   ├── cadastro/
+│   │   │   ├── dashboard/
+│   │   │   ├── agendamentos/
+│   │   │   └── novo-agendamento/
+│   │   └── shared/
+│   │       └── components/       # Componentes reutilizáveis
+│   ├── environments/             # Configurações
+│   └── styles.scss               # Estilos globais
+├── angular.json
+└── package.json
+```
+
+## 🔐 API Endpoints
+
+### Públicos
+- `POST /usuario` - Cadastrar usuário
+- `POST /usuario/login` - Login
+- `GET /barbeiros` - Listar barbeiros ativos
+- `GET /servicos` - Listar serviços ativos
+
+### Protegidos (requer token)
+- `GET /usuario/perfil` - Perfil do usuário logado
+- `POST /agendamento` - Criar agendamento
+- `GET /agendamentos` - Listar agendamentos do usuário
+- `GET /agendamento/:id` - Buscar agendamento específico
+- `PUT /agendamento/:id/status` - Alterar status
+- `DELETE /agendamento/:id` - Deletar agendamento
+
+### Admin apenas
+- `GET /usuarios` - Listar todos usuários
+- `POST /barbeiro` - Cadastrar barbeiro
+- `PUT /barbeiro/:id` - Alterar barbeiro
+- `DELETE /barbeiro/:id` - Deletar barbeiro
+- `POST /servico` - Cadastrar serviço
+- `PUT /servico/:id` - Alterar serviço
+- `DELETE /servico/:id` - Deletar serviço
+
+## 🧪 Testando a Aplicação
+
+### 1. Cadastrar Usuário
+1. Acesse `http://localhost:4200/cadastro`
+2. Preencha: nome, email, senha
+3. Clique em "Cadastrar"
+
+### 2. Fazer Login
+1. Acesse `http://localhost:4200/login`
+2. Use email e senha cadastrados
+3. Será redirecionado ao dashboard
+
+### 3. Criar Agendamento
+1. No dashboard, clique em "Novo Agendamento"
+2. Selecione serviço, barbeiro, data e hora
+3. Confirme o agendamento
+
+### 4. Gerenciar Agendamentos
+1. Acesse "Meus Agendamentos"
+2. Veja todos seus agendamentos
+3. Cancele ou delete conforme necessário
+
+## 📝 Dados de Teste
+
+O banco vem com dados pré-cadastrados:
+
+### Barbeiros
+- Carlos Silva (Cortes clássicos)
+- Rafael Santos (Barba e bigode)
+- Bruno Costa (Cortes modernos)
+
+### Serviços
+- Corte de Cabelo - R$ 45,00 (30min)
+- Barba - R$ 35,00 (20min)
+- Corte + Barba - R$ 70,00 (50min)
+- Degradê - R$ 55,00 (40min)
+- Sobrancelha - R$ 20,00 (15min)
+
+### Criar usuário Admin
+```sql
+INSERT INTO usuario (nome, email, senha, role)
+VALUES ('Admin', 'admin@barbearia.com', MD5('admin123'), 'admin');
+```
+
+## 🎯 Fluxo de Autenticação
+
+1. **Usuário se cadastra** → Dados salvos no banco com senha em MD5
+2. **Usuário faz login** → API retorna token JWT + dados do usuário
+3. **Token armazenado** → LocalStorage do navegador
+4. **Requisições protegidas** → Interceptor adiciona header `x-access-token`
+5. **Backend valida** → JWT middleware verifica token
+6. **Acesso liberado** → Dados do usuário disponíveis em `req.user`
+
+## 🔒 Segurança
+
+- ✅ Senhas hashadas com MD5 (conforme padrão do professor)
+- ✅ JWT para autenticação stateless
+- ✅ Proteção de rotas no frontend (AuthGuard)
+- ✅ Proteção de rotas no backend (JWT middleware)
+- ✅ Validação de propriedade de agendamentos
+- ✅ CORS habilitado
+- ✅ Variáveis sensíveis em .env
+
+## 🚨 Troubleshooting
+
+### Backend não conecta ao MySQL
+- Verifique se o MySQL está rodando
+- Confira credenciais no `.env`
+- Teste conexão: `mysql -u root -p`
+
+### Frontend não se comunica com backend
+- Verifique se backend está em `localhost:3000`
+- Confira `src/environments/environment.ts`
+- Veja console do navegador para erros
+
+### Erro de CORS
+- Certifique-se que CORS está habilitado no backend
+- Verifique `app.use(cors())` em `app.js`
+
+### Token inválido
+- Limpe localStorage: `localStorage.clear()`
+- Faça login novamente
+- Verifique se `JWT_SECRET` é o mesmo no backend
 
 ## 📦 Build para Produção
 
+### Backend
 ```bash
-# Build otimizado
-ng build --configuration production
-
-# Arquivos gerados em: dist/barbearia-frontend/
-# Fazer deploy em servidor web (nginx, apache, vercel, etc)
+# Já está pronto para produção
+# Configure variáveis de ambiente no servidor
 ```
 
-### Configurar servidor web
-```nginx
-# nginx.conf
-server {
-  listen 80;
-  root /var/www/barbearia/dist/barbearia-frontend;
-  
-  location / {
-    try_files $uri $uri/ /index.html;
-  }
-}
+### Frontend
+```bash
+cd barbearia-frontend
+npm run build
+
+# Arquivos gerados em: dist/barbearia-frontend
+# Faça deploy em servidor web (nginx, apache, etc)
 ```
 
-## 🎨 Customização
+## 👨‍💻 Desenvolvimento
 
-### Mudar cores
-Edite `src/styles.scss`:
-```scss
-:root {
-  --primary-purple: #YOUR_COLOR;
-  --primary-blue: #YOUR_COLOR;
-}
-```
+### Padrões de Código
+- Backend segue padrão Controller/Repository
+- Código limpo sem comentários desnecessários
+- Try-catch em todas as rotas
+- Validações de campos obrigatórios
+- Status HTTP corretos
 
-### Mudar fontes
-Edite `src/index.html`:
-```html
-<link href="https://fonts.googleapis.com/css2?family=SUA_FONTE&display=swap">
-```
+### Commits
+- Use mensagens descritivas
+- Formate código antes de commitar
+- Teste localmente antes de push
 
-### Mudar logo
-Substitua texto no navbar:
-```html
-<h1>✂️ SEU NOME</h1>
-```
+## 📄 Licença
 
-## 💡 Dicas
+MIT
 
-1. **Interceptor é automático** - Não precisa adicionar token manualmente
-2. **Guards protegem rotas** - Configure no app.routes.ts
-3. **Services são singleton** - Uma instância para toda app
-4. **Use observables** - Não esqueça subscribe()
-5. **Track by em loops** - Performance em listas grandes
+## 👤 Autor
+
+Desenvolvido seguindo os padrões de projeto do curso DSW.
 
 ---
 
-**Frontend desenvolvido com Angular 17 e standalone components** ✨
+**Barbearia Premium** - Estilo, tradição e tecnologia em perfeita harmonia! ✂️✨
 

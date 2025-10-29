@@ -7,25 +7,25 @@ const autenticador = getAuthentication()
 
 endpoints.post('/usuario', async (req, resp) => {
   try {
-    let novoUsuario = req.body
+    let novoCliente = req.body
     
-    if (!novoUsuario.nome || !novoUsuario.email || !novoUsuario.senha) {
+    if (!novoCliente.nome || !novoCliente.telefone) {
       return resp.status(400).send({ 
-        erro: 'Campos obrigatórios: nome, email, senha' 
+        erro: 'Campos obrigatórios: nome, telefone' 
       })
     }
 
-    const emailExiste = await repo.verificarEmailExistente(novoUsuario.email)
-    if (emailExiste) {
+    const telefoneExiste = await repo.verificarTelefoneExistente(novoCliente.telefone)
+    if (telefoneExiste) {
       return resp.status(400).send({ 
-        erro: 'Email já cadastrado' 
+        erro: 'Telefone já cadastrado' 
       })
     }
     
-    let id = await repo.criarConta(novoUsuario)
+    let id = await repo.criarConta(novoCliente)
     
     resp.status(201).send({ 
-      mensagem: 'Usuário criado com sucesso',
+      mensagem: 'Cliente criado com sucesso',
       novoId: id 
     })
     

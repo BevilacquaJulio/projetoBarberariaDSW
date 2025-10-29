@@ -1,41 +1,43 @@
 import { connection } from './connection.js'
 
 export async function inserirAgendamento(agendamento) {
+  const dataHora = agendamento.data_hora || `${agendamento.data_agendamento} ${agendamento.hora_agendamento}`
+  const [data, hora] = dataHora.split(' ')
+  
   const comando = `
-    INSERT INTO agendamentos (usuario_id, barbeiro_id, servico_id, data_hora, status, observacoes)
+    INSERT INTO agendamentos (cliente_id, servico_id, data_agendamento, hora_agendamento, status, observacoes)
     VALUES (?, ?, ?, ?, ?, ?)
   `
   const [info] = await connection.query(comando, [
-    agendamento.usuario_id,
-    agendamento.barbeiro_id,
+    agendamento.cliente_id || agendamento.usuario_id,
     agendamento.servico_id,
-    agendamento.data_hora,
+    data,
+    hora,
     agendamento.status || 'agendado',
     agendamento.observacoes || null
   ])
   return info.insertId
 }
 
-export async function listarAgendamentosPorUsuario(usuarioId) {
+export async function listarAgendamentosPorUsuario(clienteId) {
   const comando = `
     SELECT 
       a.id,
-      a.data_hora,
+      CONCAT(a.data_agendamento, ' ', a.hora_agendamento) as data_hora,
+      a.data_agendamento,
+      a.hora_agendamento,
       a.status,
       a.observacoes,
-      a.criado_em,
-      b.nome as barbeiro_nome,
-      b.foto_url as barbeiro_foto,
+      a.created_at as criado_em,
       s.nome as servico_nome,
       s.preco as servico_preco,
-      s.duracao as servico_duracao
+      s.duracao_minutos as servico_duracao
     FROM agendamentos a
-    JOIN barbeiro b ON a.barbeiro_id = b.id
-    JOIN servico s ON a.servico_id = s.id
-    WHERE a.usuario_id = ?
-    ORDER BY a.data_hora DESC
+    JOIN servicos s ON a.servico_id = s.id
+    WHERE a.cliente_id = ?
+    ORDER BY a.data_agendamento DESC, a.hora_agendamento DESC
   `
-  const [registros] = await connection.query(comando, [usuarioId])
+  const [registros] = await connection.query(comando, [clienteId])
   return registros
 }
 
@@ -43,21 +45,21 @@ export async function listarTodosAgendamentos() {
   const comando = `
     SELECT 
       a.id,
-      a.data_hora,
+      CONCAT(a.data_agendamento, ' ', a.hora_agendamento) as data_hora,
+      a.data_agendamento,
+      a.hora_agendamento,
       a.status,
       a.observacoes,
-      a.criado_em,
-      u.nome as usuario_nome,
-      u.telefone as usuario_telefone,
-      b.nome as barbeiro_nome,
+      a.created_at as criado_em,
+      c.nome as usuario_nome,
+      c.telefone as usuario_telefone,
       s.nome as servico_nome,
       s.preco as servico_preco,
-      s.duracao as servico_duracao
+      s.duracao_minutos as servico_duracao
     FROM agendamentos a
-    JOIN usuario u ON a.usuario_id = u.id
-    JOIN barbeiro b ON a.barbeiro_id = b.id
-    JOIN servico s ON a.servico_id = s.id
-    ORDER BY a.data_hora DESC
+    JOIN clientes c ON a.cliente_id = c.id
+    JOIN servicos s ON a.servico_id = s.id
+    ORDER BY a.data_agendamento DESC, a.hora_agendamento DESC
   `
   const [registros] = await connection.query(comando)
   return registros
@@ -67,16 +69,15 @@ export async function buscarAgendamento(id) {
   const comando = `
     SELECT 
       a.*,
-      u.nome as usuario_nome,
-      u.telefone as usuario_telefone,
-      b.nome as barbeiro_nome,
+      CONCAT(a.data_agendamento, ' ', a.hora_agendamento) as data_hora,
+      c.nome as usuario_nome,
+      c.telefone as usuario_telefone,
       s.nome as servico_nome,
       s.preco as servico_preco,
-      s.duracao as servico_duracao
+      s.duracao_minutos as servico_duracao
     FROM agendamentos a
-    JOIN usuario u ON a.usuario_id = u.id
-    JOIN barbeiro b ON a.barbeiro_id = b.id
-    JOIN servico s ON a.servico_id = s.id
+    JOIN clientes c ON a.cliente_id = c.id
+    JOIN servicos s ON a.servico_id = s.id
     WHERE a.id = ?
   `
   const [registro] = await connection.query(comando, [id])
@@ -85,7 +86,7 @@ export async function buscarAgendamento(id) {
 
 export async function alterarStatusAgendamento(id, status) {
   const comando = `
-    UPDATE agendamentos
+    UPDATE agendamentos 
        SET status = ?
      WHERE id = ?
   `
@@ -101,29 +102,31 @@ export async function deletarAgendamento(id) {
   return registro.affectedRows
 }
 
-export async function verificarProprietarioAgendamento(id, usuarioId) {
+export async function verificarProprietarioAgendamento(id, clienteId) {
   const comando = `
     SELECT COUNT(*) as total FROM agendamentos 
-     WHERE id = ? AND usuario_id = ?
+     WHERE id = ? AND cliente_id = ?
   `
-  const [registro] = await connection.query(comando, [id, usuarioId])
+  const [registro] = await connection.query(comando, [id, clienteId])
   return registro[0].total > 0
 }
 
-export async function verificarDisponibilidadeBarbeiro(barbeiroId, dataHora, servicoId, agendamentoId = null) {
+export async function verificarDisponibilidadeHorario(dataAgendamento, horaAgendamento, servicoId, agendamentoId = null) {
   let comando = `
     SELECT COUNT(*) as total 
       FROM agendamentos a
-      JOIN servico s ON a.servico_id = s.id
-     WHERE a.barbeiro_id = ? 
-       AND a.status IN ('agendado', 'em_andamento')
+      JOIN servicos s ON a.servico_id = s.id
+     WHERE a.data_agendamento = ?
+       AND a.status IN ('agendado', 'confirmado', 'em_andamento')
        AND (
-         (a.data_hora <= ? AND DATE_ADD(a.data_hora, INTERVAL s.duracao MINUTE) > ?) OR
-         (a.data_hora < DATE_ADD(?, INTERVAL (SELECT duracao FROM servico WHERE id = ?) MINUTE) AND a.data_hora >= ?)
+         (TIME(a.hora_agendamento) <= TIME(?) AND 
+          ADDTIME(a.hora_agendamento, SEC_TO_TIME(s.duracao_minutos * 60)) > TIME(?)) OR
+         (TIME(a.hora_agendamento) < ADDTIME(?, SEC_TO_TIME((SELECT duracao_minutos FROM servicos WHERE id = ?) * 60)) AND 
+          TIME(a.hora_agendamento) >= TIME(?))
        )
   `
   
-  let params = [barbeiroId, dataHora, dataHora, dataHora, servicoId, dataHora]
+  let params = [dataAgendamento, horaAgendamento, horaAgendamento, horaAgendamento, servicoId, horaAgendamento]
   
   if (agendamentoId) {
     comando += ` AND a.id != ?`
@@ -138,18 +141,18 @@ export async function listarAgendamentosPorData(data) {
   const comando = `
     SELECT 
       a.id,
-      a.data_hora,
+      CONCAT(a.data_agendamento, ' ', a.hora_agendamento) as data_hora,
+      a.data_agendamento,
+      a.hora_agendamento,
       a.status,
-      u.nome as usuario_nome,
-      b.nome as barbeiro_nome,
+      c.nome as usuario_nome,
       s.nome as servico_nome,
-      s.duracao as servico_duracao
+      s.duracao_minutos as servico_duracao
     FROM agendamentos a
-    JOIN usuario u ON a.usuario_id = u.id
-    JOIN barbeiro b ON a.barbeiro_id = b.id
-    JOIN servico s ON a.servico_id = s.id
-    WHERE DATE(a.data_hora) = ?
-    ORDER BY a.data_hora
+    JOIN clientes c ON a.cliente_id = c.id
+    JOIN servicos s ON a.servico_id = s.id
+    WHERE a.data_agendamento = ?
+    ORDER BY a.hora_agendamento
   `
   const [registros] = await connection.query(comando, [data])
   return registros

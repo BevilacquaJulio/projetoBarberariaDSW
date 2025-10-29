@@ -1,11 +1,11 @@
 .navbar {
-  background: var(--secondary-black);
-  border-bottom: 2px solid var(--primary-gold);
+  background: white;
+  border-bottom: 2px solid var(--primary-purple);
   padding: 15px 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
   .navbar-content {
     display: flex;
@@ -20,10 +20,11 @@
       h1 {
         font-size: 24px;
         margin: 0;
-        background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+        background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        font-weight: 700;
       }
     }
   }
@@ -31,12 +32,12 @@
   .menu-toggle {
     display: none;
     background: transparent;
-    border: 2px solid var(--primary-gold);
-    color: var(--primary-gold);
+    border: 2px solid var(--primary-purple);
+    color: var(--primary-purple);
     font-size: 24px;
     padding: 5px 15px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
 
     @media (max-width: 768px) {
       display: block;
@@ -53,10 +54,11 @@
       top: 70px;
       right: 0;
       left: 0;
-      background: var(--secondary-black);
+      background: white;
       flex-direction: column;
       padding: 20px;
-      border-top: 1px solid var(--dark-grey);
+      border-top: 1px solid #e5e7eb;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       transform: translateY(-200%);
       opacity: 0;
       transition: all 0.3s ease;
@@ -68,22 +70,21 @@
     }
 
     a {
-      color: var(--text-grey);
+      color: var(--text-dark);
       text-decoration: none;
       font-weight: 600;
-      text-transform: uppercase;
       font-size: 14px;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       transition: all 0.3s ease;
       padding: 8px 0;
 
       &:hover {
-        color: var(--primary-gold);
+        color: var(--primary-purple);
       }
 
       &.active {
-        color: var(--primary-gold);
-        border-bottom: 2px solid var(--primary-gold);
+        color: var(--primary-purple);
+        border-bottom: 2px solid var(--primary-purple);
       }
 
       @media (max-width: 768px) {
@@ -96,6 +97,20 @@
     button {
       @media (max-width: 768px) {
         width: 100%;
+      }
+    }
+
+    a.btn-primary {
+      color: white !important;
+      padding: 12px 28px;
+      
+      &:hover {
+        color: white !important;
+        border-bottom: none;
+      }
+
+      @media (max-width: 768px) {
+        padding: 14px 28px;
       }
     }
   }

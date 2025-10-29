@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
-import { BarbeiroService, Barbeiro } from '../../core/services/barbeiro.service';
 import { ServicoService, Servico } from '../../core/services/servico.service';
 
 @Component({
@@ -13,27 +12,15 @@ import { ServicoService, Servico } from '../../core/services/servico.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  barbeiros: Barbeiro[] = [];
   servicos: Servico[] = [];
 
   constructor(
-    private barbeiroService: BarbeiroService,
     private servicoService: ServicoService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    this.carregarBarbeiros();
     this.carregarServicos();
-  }
-
-  carregarBarbeiros() {
-    this.barbeiroService.listar().subscribe({
-      next: (response) => {
-        this.barbeiros = response.barbeiros;
-      },
-      error: (err) => console.error('Erro ao carregar barbeiros:', err)
-    });
   }
 
   carregarServicos() {
@@ -46,7 +33,7 @@ export class HomeComponent implements OnInit {
   }
 
   agendar() {
-    this.router.navigate(['/novo-agendamento']);
+    this.router.navigate(['/login']);
   }
 }
 
