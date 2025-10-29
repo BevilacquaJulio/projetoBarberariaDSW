@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS clientes (
     telefone VARCHAR(15) UNIQUE NOT NULL,
     email VARCHAR(100),
     endereco VARCHAR(255),
+    data_nascimento DATE,
+    observacoes TEXT,
     ativo BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -70,7 +72,7 @@ INSERT INTO servicos (nome, descricao, preco, duracao_minutos, ativo) VALUES
 ('Luzes', 'Luzes em todo o cabelo', 449.99, 240, TRUE),
 ('Hidratação', 'Tratamento hidratante para cabelos', 169.99, 60, TRUE),
 ('Escova', 'Penteado para eventos', 269.99, 120, TRUE),
-('Maquiagem', 'Maquiagem para eventos', 299.99, 120, TRUE)
+('Maquiagem', 'Maquiagem para eventos', 299.99, 120, TRUE);
 
 -- Inserir alguns clientes de exemplo
 INSERT INTO clientes (nome, telefone, email, data_nascimento, observacoes) VALUES 
