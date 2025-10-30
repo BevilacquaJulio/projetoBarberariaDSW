@@ -30,11 +30,8 @@
             Sair ({{ usuario?.nome }})
           </button>
         } @else {
-          <a routerLink="/login" routerLinkActive="active" (click)="menuAberto = false">
-            Login
-          </a>
-          <a routerLink="/cadastro" class="btn btn-primary" (click)="menuAberto = false">
-            Cadastre-se
+          <a routerLink="/login" class="btn btn-primary" (click)="menuAberto = false">
+            Login Administrativo
           </a>
         }
       </div>
