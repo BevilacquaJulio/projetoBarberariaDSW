@@ -1,6 +1,6 @@
 # 🎨 Frontend - GV Cabeleireiro (Guilherme Vasconcelos)
 
-Interface moderna em Angular com tema elegante preto e dourado.
+Interface moderna em Angular com gradientes vibrantes de roxo e azul.
 
 ## 🚀 Tecnologias
 

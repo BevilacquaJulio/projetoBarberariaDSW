@@ -39,7 +39,7 @@ O **Sistema GV Cabeleireiro** (Guilherme Vasconcelos) é uma aplicação web ful
 - 💇‍♂️ **Catálogo de Serviços** - Cortes, coloração, hidratação, escova, maquiagem
 - 📅 **Sistema de Agendamentos** - Agendamento online com validação de horários
 - 📊 **Dashboard Administrativo** - Estatísticas e relatórios em tempo real
-- 🎨 **Design Elegante** - Interface moderna com tema preto e dourado
+- 🎨 **Design Moderno** - Interface com gradientes vibrantes roxo e azul
 - 📱 **Totalmente Responsivo** - Funciona perfeitamente em mobile e desktop
 - 🚀 **API RESTful** - Backend robusto com Node.js + Express
 - 🔄 **SPA (Single Page Application)** - Frontend com Angular 17
@@ -96,26 +96,52 @@ Confira a seção [Screenshots](#-screenshots) para visualizar a interface do si
 
 ## 🎨 Design e Paleta de Cores
 
-O sistema utiliza um tema elegante e sofisticado com cores neutras e detalhes em dourado:
+O sistema utiliza um tema moderno e vibrante com gradientes de **roxo e azul**, inspirado em interfaces contemporâneas.
 
 ### Paleta Principal
 
 ```scss
-/* Cores Principais */
---preto-primario: #0a0a0a;      /* Fundo principal */
---preto-secundario: #1a1a1a;    /* Cards e componentes */
---preto-terciario: #2a2a2a;     /* Elementos de destaque */
+/* Roxo (Primary) */
+--primary-purple: #7c3aed;      /* Roxo vibrante principal */
+--secondary-purple: #a78bfa;    /* Roxo claro secundário */
+--dark-purple: #5b21b6;         /* Roxo escuro para hover */
+--hover-purple: #6d28d9;        /* Roxo médio para interações */
 
-/* Dourado (Acentuação) */
---dourado-primario: #d4af37;    /* Botões e links */
---dourado-hover: #f4d03f;       /* Hover states */
---dourado-claro: #f4e5c3;       /* Textos suaves */
+/* Azul (Complementar) */
+--primary-blue: #3b82f6;        /* Azul vibrante principal */
+--secondary-blue: #60a5fa;      /* Azul claro secundário */
+--dark-blue: #1e40af;           /* Azul escuro para hover */
 
-/* Cinzas e Brancos */
---branco: #ffffff;              /* Texto principal */
---cinza-claro: #e5e5e5;        /* Texto secundário */
---cinza-medio: #9ca3af;         /* Textos auxiliares */
---cinza-escuro: #6b7280;        /* Bordas e divisores */
+/* Neutros */
+--primary-black: #0a0a0a;       /* Preto profundo */
+--secondary-black: #1a1a1a;     /* Preto suave */
+--dark-grey: #2a2a2a;           /* Cinza escuro */
+--medium-grey: #3a3a3a;         /* Cinza médio */
+--light-grey: #505050;          /* Cinza claro */
+
+/* Textos */
+--text-white: #ffffff;          /* Texto branco */
+--text-grey: #9ca3af;           /* Texto cinza */
+--text-dark: #1f2937;           /* Texto escuro */
+--light-bg: #f9fafb;            /* Fundo claro */
+
+/* Estados */
+--success: #10b981;             /* Verde - sucesso */
+--danger: #ef4444;              /* Vermelho - erro */
+--warning: #f59e0b;             /* Laranja - alerta */
+```
+
+### Gradientes Característicos
+
+```scss
+/* Botão Primary */
+linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)
+
+/* Scrollbar */
+linear-gradient(180deg, #7c3aed, #3b82f6)
+
+/* Divisores */
+linear-gradient(90deg, #7c3aed, #3b82f6)
 ```
 
 ### Tipografia
@@ -125,16 +151,25 @@ O sistema utiliza um tema elegante e sofisticado com cores neutras e detalhes em
 
 ### Componentes de UI
 
-- **Botões:** Fundo dourado com hover suave
-- **Cards:** Fundo preto secundário com shadow sutil
-- **Inputs:** Borda dourada no foco
-- **Badges:** Cores de status (verde, amarelo, vermelho, azul)
+- **Botões Primary:** Gradiente roxo → azul com hover elevado
+- **Botões Secondary:** Borda roxa com fill no hover
+- **Cards:** Fundo branco com shadow sutil e hover roxo
+- **Inputs:** Borda roxa no foco com glow
+- **Badges:** Cores de status (verde, vermelho, laranja)
+- **Scrollbar:** Gradiente roxo → azul customizado
+
+### Efeitos Visuais
+
+- **Hover em Cards:** Elevação + shadow roxa + borda roxa
+- **Focus em Inputs:** Border roxa + glow box-shadow
+- **Botões:** Transform translateY(-2px) + shadow
+- **Transições:** `all 0.3s ease` em todos elementos interativos
 
 ### Responsividade
 
 - **Breakpoint:** `768px` (mobile-first)
-- **Grid System:** Flexbox e CSS Grid
-- **Menu Mobile:** Hamburger menu animado
+- **Grid System:** CSS Grid com `repeat(auto-fit, minmax())`
+- **Mobile:** Padding reduzido + botões full-width
 
 ---
 
@@ -171,6 +206,7 @@ O sistema utiliza um tema elegante e sofisticado com cores neutras e detalhes em
 - ✅ Tratamento robusto de erros
 - ✅ Arquitetura MVC (Controller/Repository)
 - ✅ Standalone Components (Angular 17)
+- ✅ Design com gradientes roxo e azul
 
 ---
 
@@ -530,7 +566,7 @@ barbeariaProjeto/
 - ✅ Guards de rota (proteção de páginas)
 - ✅ Validação de horários (evita conflitos)
 - ✅ Responsivo (mobile-first)
-- ✅ Design moderno (preto e dourado)
+- ✅ Design moderno (gradientes roxo e azul)
 - ✅ Lazy loading de rotas
 - ✅ Standalone components (Angular 17)
 - ✅ TypeScript strict mode
