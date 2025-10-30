@@ -1,6 +1,6 @@
-# 🎨 Frontend - Barbearia Premium
+# 🎨 Frontend - GV Cabeleireiro (Guilherme Vasconcelos)
 
-Interface moderna em Angular com tema claro e gradientes roxo/azul.
+Interface moderna em Angular com gradientes vibrantes de roxo e azul.
 
 ## 🚀 Tecnologias
 

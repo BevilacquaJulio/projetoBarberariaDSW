@@ -1,8 +1,8 @@
-# 🔧 Backend - Sistema Stillus Gama (Salão de Cabeleireira)
+# 🔧 Backend - Sistema GV Cabeleireiro (Guilherme Vasconcelos)
 
-API REST completa para sistema de agendamentos de salão de beleza.
+API REST completa para sistema de agendamentos de salão de cabeleireiro.
 
-> ⚠️ **IMPORTANTE:** Este backend foi adaptado para o banco de dados `gv_banco` com estrutura de salão de cabeleireira.
+> ⚠️ **IMPORTANTE:** Este backend foi adaptado para o banco de dados `gv_banco` com estrutura de salão de cabeleireiro.
 
 ## 🚀 Tecnologias
 

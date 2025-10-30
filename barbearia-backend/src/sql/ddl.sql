@@ -1,5 +1,5 @@
--- Script SQL para criação do banco de dados Stillus Gama
--- Sistema de gestão de salão de cabeleireira
+-- Script SQL para criação do banco de dados GV Cabeleireiro
+-- Sistema de gestão de salão de cabeleireiro - Guilherme Vasconcelos
 
 -- Criar banco de dados (se não existir)
 CREATE DATABASE IF NOT EXISTS gv_banco;
@@ -130,7 +130,7 @@ GROUP BY DATE(a.data_agendamento)
 ORDER BY data DESC;
 
 -- Mostrar informações do banco criado
-SELECT 'Banco de dados Stillus Gama criado com sucesso!' as status;
+SELECT 'Banco de dados GV Cabeleireiro (Guilherme Vasconcelos) criado com sucesso!' as status;
 SELECT COUNT(*) as total_usuarios FROM usuarios;
 SELECT COUNT(*) as total_clientes FROM clientes;
 SELECT COUNT(*) as total_servicos FROM servicos;
