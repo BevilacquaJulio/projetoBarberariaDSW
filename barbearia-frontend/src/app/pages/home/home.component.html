@@ -8,6 +8,8 @@
       <div class="logo-container">
         <img src="assets/img/logo.png" alt="GV Salão" class="logo-hero">
       </div>
+      <!-- Badge de administrador (visível para admins) -->
+      <div *ngIf="isAdmin" class="admin-badge">Administrador</div>
       <h1 class="hero-title">Guilherme Vasconcelos</h1>
       <p class="hero-subtitle">Beleza, Estilo e Transformação</p>
       <p class="hero-description">
@@ -15,50 +17,30 @@
         atendimento personalizado e equipes capacitadas em cortes, coloração e tratamentos.
       </p>
       
-      <!-- Galeria de Cortes no Hero -->
-      <div class="hero-galeria">
-        <div class="hero-galeria-item">
-          <div class="galeria-placeholder">
-            <span class="galeria-icon">✂️</span>
-            <p>Corte 1</p>
-          </div>
-        </div>
-        
-        <div class="hero-galeria-item">
-          <div class="galeria-placeholder">
-            <span class="galeria-icon">💇‍♀️</span>
-            <p>Corte 2</p>
-          </div>
-        </div>
-        
-        <div class="hero-galeria-item">
-          <div class="galeria-placeholder">
-            <span class="galeria-icon">✨</span>
-            <p>Corte 3</p>
-          </div>
-        </div>
-        
-        <div class="hero-galeria-item">
-          <div class="galeria-placeholder">
-            <span class="galeria-icon">💈</span>
-            <p>Corte 4</p>
-          </div>
-        </div>
-        
-        <div class="hero-galeria-item">
-          <div class="galeria-placeholder">
-            <span class="galeria-icon">🎨</span>
-            <p>Corte 5</p>
-          </div>
-        </div>
-        
-        <div class="hero-galeria-item">
-          <div class="galeria-placeholder">
-            <span class="galeria-icon">💜</span>
-            <p>Corte 6</p>
+      <!-- Upload de Imagem (visível apenas para administradores) -->
+      <div class="upload-section" *ngIf="isAdmin">
+        <input 
+          type="file" 
+          (change)="onFileSelected($event)" 
+          accept="image/*" 
+          class="file-input"
+          #fileInput>
+        <button class="btn-upload" (click)="fileInput.click()">
+          Selecionar Imagem
+        </button>
+
+        <div *ngIf="selectedFile" class="upload-meta">
+          <input type="text" placeholder="Título" [(ngModel)]="newTitulo" />
+          <input type="text" placeholder="Descrição" [(ngModel)]="newDescricao" />
+          <input type="number" placeholder="Preço" [(ngModel)]="newPreco" />
+          <div class="upload-actions">
+            <button class="btn-upload" (click)="enviarImagem()">Enviar</button>
+            <button class="btn-cancel" (click)="selectedFile = undefined">Cancelar</button>
           </div>
         </div>
       </div>
+
+      <!-- Galeria removida do topo: imagens serão exibidas apenas nos cards de serviço -->
       
       <button class="btn-hero" (click)="agendar()">
         Agendar Horário
@@ -88,23 +70,24 @@
     <div class="divider-blue"></div>
     
     <div class="servicos-grid">
-      @for (servico of servicos; track servico.id) {
-        <div class="servico-card">
-          <div class="servico-image">
-            <div class="servico-overlay">
-              <span class="servico-duracao">{{ servico.duracao }} min</span>
-            </div>
+      <div class="servico-card" *ngFor="let servico of servicos; let i = index">
+        <div class="servico-image">
+          <div class="image-box">
+            <img [src]="getServicoImage(i)" alt="{{ servico.nome }}" />
           </div>
-          <div class="servico-content">
-            <h3>{{ servico.nome }}</h3>
-            <p class="servico-descricao">{{ servico.descricao }}</p>
-            <div class="servico-footer">
-              <span class="servico-preco">R$ {{ servico.preco.toFixed(2) }}</span>
-              <button class="btn-agendar" (click)="agendar()">Agendar</button>
-            </div>
+          <div class="servico-overlay">
+            <span class="servico-duracao">{{ servico.duracao }} min</span>
           </div>
         </div>
-      }
+        <div class="servico-content">
+          <h3>{{ servico.nome }}</h3>
+          <p class="servico-descricao">{{ getServicoDescricao(i) }}</p>
+          <div class="servico-footer">
+            <span class="servico-preco">R$ {{ getServicoPreco(i) | number:'1.2-2' }}</span>
+            <button class="btn-agendar" (click)="agendar()">Agendar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -120,7 +103,7 @@
         <p class="depoimento-texto">
           "Guilherme é um excelente profissional! O amigo a quem confio tudo de cabelo. Um excelente atendimento sempre que vou, algo do cumprimento que quero e me deu. Obrigado Gui!" ❤️
         </p>
-        <p class="depoimento-autor">- Luzia Nunes</p>
+        <p class="depoimento-autor">- Luiza Nunes</p>
       </div>
       
       <div class="depoimento-card">

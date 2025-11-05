@@ -39,11 +39,10 @@ endpoints.post('/servico', autenticador, async (req, resp) => {
 
 endpoints.get('/servicos', async (req, resp) => {
   try {
-    let servicos = await repo.listarServicos()
+    // Usa lista com imagem principal se disponível
+    let servicos = await repo.listarServicosComImagem()
 
-    resp.send({
-      servicos: servicos
-    })
+    resp.send({ servicos })
     
   } catch (error) {
     resp.status(500).send({ 

@@ -10,6 +10,7 @@ export interface Servico {
   preco: number;
   duracao: number;
   ativo: boolean;
+  imagem_filename?: string | null;
 }
 
 @Injectable({

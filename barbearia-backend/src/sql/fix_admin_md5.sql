@@ -1,4 +1,4 @@
--- Active: 1757595345521@@localhost@3306@gv_banco
+-- Active: 1761224528377@@127.0.0.1@3306@gv_banco
 -- ✅ Script de Correção - Admin com MD5
 -- Execute este script no MySQL para corrigir o problema de autenticação
 

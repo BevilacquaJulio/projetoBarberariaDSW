@@ -227,4 +227,5 @@ endpoints.delete('/agendamento/:id', autenticador, async (req, resp) => {
   }
 })
 
+
 export default endpoints
