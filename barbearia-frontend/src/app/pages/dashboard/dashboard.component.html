@@ -2,79 +2,92 @@
 
 <div class="dashboard-container">
   <div class="container">
-    <div class="dashboard-header">
-      <h1>Bem-vindo, {{ usuario?.nome }}!</h1>
-      <p>Gerencie seus agendamentos e perfil</p>
-    </div>
+    <div class="dashboard-section">
+      <h1><span class="title-bar"></span>Dashboard - Visão Geral</h1>
 
-    <div class="gold-divider"></div>
-
-    <div class="dashboard-stats">
-      <div class="stat-card card">
-        <h3>{{ agendamentosProximos.length }}</h3>
-        <p>Agendamentos Próximos</p>
-      </div>
-      <div class="stat-card card">
-        <h3>{{ getAgendamentosConcluidos() }}</h3>
-        <p>Serviços Concluídos</p>
-      </div>
-      <div class="stat-card card">
-        <h3>{{ agendamentos.length }}</h3>
-        <p>Total de Agendamentos</p>
-      </div>
-    </div>
-
-    <div class="dashboard-actions">
-      <button class="btn btn-primary" (click)="novoAgendamento()">
-        ➕ Novo Agendamento
-      </button>
-      <button class="btn btn-secondary" (click)="verTodos()">
-        📋 Ver Todos os Agendamentos
-      </button>
-    </div>
-
-    @if (carregando) {
-      <div class="loading text-center">
-        <p>Carregando...</p>
-      </div>
-    } @else {
-      @if (agendamentosProximos.length > 0) {
-        <section class="proximos-agendamentos">
-          <h2>Próximos Agendamentos</h2>
-          <div class="gold-divider"></div>
-          
-          <div class="grid grid-2 mt-2">
-            @for (agendamento of agendamentosProximos; track agendamento.id) {
-              <div class="card agendamento-card">
-                <div class="agendamento-header">
-                  <h3>{{ agendamento.servico_nome }}</h3>
-                  <span class="status-badge" [ngClass]="getStatusClass(agendamento.status || '')">
-                    {{ getStatusLabel(agendamento.status || '') }}
-                  </span>
-                </div>
-                <div class="agendamento-info">
-                  <p><strong>Barbeiro:</strong> {{ agendamento.barbeiro_nome }}</p>
-                  <p><strong>Data/Hora:</strong> {{ formatarData(agendamento.data_hora) }}</p>
-                  <p><strong>Duração:</strong> {{ agendamento.servico_duracao }} minutos</p>
-                  <p class="preco"><strong>Valor:</strong> R$ {{ agendamento.servico_preco?.toFixed(2) }}</p>
-                  @if (agendamento.observacoes) {
-                    <p class="observacoes"><strong>Obs:</strong> {{ agendamento.observacoes }}</p>
-                  }
-                </div>
-              </div>
-            }
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-content">
+            <h3>Total de Agendamentos</h3>
+            <p class="stat-number">{{ agendamentos.length }}</p>
           </div>
-        </section>
-      } @else {
-        <div class="empty-state card text-center">
-          <h2>Nenhum agendamento próximo</h2>
-          <p>Que tal agendar um horário agora?</p>
-          <button class="btn btn-primary mt-2" (click)="novoAgendamento()">
-            Agendar Agora
-          </button>
         </div>
-      }
-    }
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="stat-content">
+            <h3>Agendamentos Hoje</h3>
+            <p class="stat-number">{{ countAgendamentosHoje() }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-clock"></i></div>
+          <div class="stat-content">
+            <h3>Próximos Agendamentos</h3>
+            <p class="stat-number">{{ agendamentosProximos.length }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-star"></i></div>
+          <div class="stat-content">
+            <h3>Serviços Concluídos</h3>
+            <p class="stat-number">{{ getAgendamentosConcluidos() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-content">
+        <div class="recent-section">
+          <h2><span class="title-bar"></span>Últimos Agendamentos</h2>
+          <div class="recent-list">
+            <ng-container *ngIf="!carregando; else loading">
+              <ng-container *ngIf="agendamentos && agendamentos.length; else emptyRecent">
+                <div *ngFor="let a of agendamentos | slice:0:5" class="recent-item">
+                  <div class="recent-info">
+                    <h4>{{ displayName(a) }}</h4>
+                    <p>{{ displayServico(a) }} - {{ displayDateTime(a) }}</p>
+                  </div>
+                  <div class="recent-status">
+                    <span class="status-badge" [ngClass]="getStatusClass(getStatus(a))">{{ getStatusLabel(getStatus(a)) }}</span>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #loading>
+              <p style="text-align:center; color:#666; padding:20px;">Carregando...</p>
+            </ng-template>
+            <ng-template #emptyRecent>
+              <p style="text-align:center; color:#666; padding:20px;">Nenhum agendamento encontrado</p>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <h2><span class="title-bar"></span>Ações Rápidas</h2>
+          <div class="actions-grid">
+            <a class="action-card" (click)="goToCadastro()">
+              <i class="fas fa-user-plus"></i>
+              <span>Novo Cliente</span>
+            </a>
+            <a class="action-card" (click)="goToNovoAgendamento()">
+              <i class="fas fa-calendar-plus"></i>
+              <span>Novo Agendamento</span>
+            </a>
+            <a class="action-card" (click)="goToClientes()">
+              <i class="fas fa-search"></i>
+              <span>Buscar Cliente</span>
+            </a>
+            <a class="action-card" (click)="verTodos()">
+              <i class="fas fa-list"></i>
+              <span>Ver Agendamentos</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

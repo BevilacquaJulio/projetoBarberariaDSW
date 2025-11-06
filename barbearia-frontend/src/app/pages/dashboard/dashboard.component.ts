@@ -95,5 +95,53 @@ export class DashboardComponent implements OnInit {
   verTodos() {
     this.router.navigate(['/agendamentos']);
   }
+
+  // Conta agendamentos que são hoje
+  countAgendamentosHoje(): number {
+    const hoje = new Date().toDateString();
+    return this.agendamentos.filter(a => {
+      try {
+        const d = new Date((a as any).data_hora || ((a as any).data + 'T' + ((a as any).hora || '00:00')));
+        return d.toDateString() === hoje;
+      } catch (e) {
+        return false;
+      }
+    }).length;
+  }
+
+  // Helper para exibir nome do cliente/usuário
+  displayName(a: Agendamento): string {
+    const anyA: any = a as any;
+    return anyA.nome || anyA.cliente_nome || anyA.usuario_nome || '—';
+  }
+
+  displayServico(a: Agendamento): string {
+    const anyA: any = a as any;
+    return anyA.servico || anyA.servico_nome || '—';
+  }
+
+  displayDateTime(a: Agendamento): string {
+    const anyA: any = a as any;
+    const dt = anyA.data_hora || (anyA.data ? (anyA.data + 'T' + (anyA.hora || '00:00')) : null);
+    if (!dt) return '—';
+    return this.formatarData(dt);
+  }
+
+  getStatus(a: Agendamento): string {
+    const anyA: any = a as any;
+    return anyA.status || 'agendado';
+  }
+
+  goToCadastro() {
+    this.router.navigate(['/cadastro']);
+  }
+
+  goToNovoAgendamento() {
+    this.router.navigate(['/novo-agendamento']);
+  }
+
+  goToClientes() {
+    this.router.navigate(['/clientes']);
+  }
 }
 

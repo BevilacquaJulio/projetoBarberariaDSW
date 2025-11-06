@@ -1,3 +1,23 @@
+# README (encaminhamento rápido)
+
+Este repositório agora usa a documentação consolidada em `DOCUMENTACAO-COMPLETA.md`.
+
+Abra e leia `DOCUMENTACAO-COMPLETA.md` para instruções completas de instalação, execução e detalhes do projeto.
+
+Comandos úteis (PowerShell):
+
+```powershell
+# Instalar dependências do backend
+cd .\barbearia-backend
+npm install
+
+# Instalar e iniciar frontend (novo terminal)
+cd ..\barbearia-frontend
+npm install
+npm start
+```
+
+Se preferir um README mais longo, edite `DOCUMENTACAO-COMPLETA.md` ou peça para que eu atualize o arquivo com seções extras.
 # 💈 Sistema de Agendamentos - Stillus Gama (Salão de Cabeleireira)
 
 Sistema completo de agendamentos para salão de beleza com backend em Node.js e frontend em Angular. Tema escuro sofisticado com paleta preto e dourado.
