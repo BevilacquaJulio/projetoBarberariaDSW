@@ -5,12 +5,10 @@ import { AuthService } from '../services/auth.service';
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-
-  if (authService.isAuthenticated()) {
-    return true;
-  }
-
-  router.navigate(['/login']);
-  return false;
+  // Temporariamente permitir todas as rotas (desativando a exigência de login).
+  // Para reverter, restaurar a lógica original: verificar isAuthenticated() e,
+  // se não autenticado, redirecionar para '/login'.
+  // OBS: esta alteração é propositalmente simples e temporária.
+  return true;
 };
 

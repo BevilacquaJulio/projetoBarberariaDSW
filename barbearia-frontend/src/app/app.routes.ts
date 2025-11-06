@@ -13,7 +13,9 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent)
+    // Temporariamente desativamos a página de login: redireciona para o dashboard
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
   },
   {
     path: 'dashboard',
