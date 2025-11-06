@@ -11,6 +11,13 @@ endpoints.post('/agendamento', autenticador, async (req, resp) => {
     let agendamento = req.body
     let clienteId = req.user.id
     
+    // Se for admin e cliente_id foi fornecido, usa o cliente_id fornecido
+    if (req.user.role === 'admin' || req.user.role === 'administrador') {
+      if (agendamento.cliente_id) {
+        clienteId = agendamento.cliente_id
+      }
+    }
+    
     if (!agendamento.servico_id || !agendamento.data_hora) {
       return resp.status(400).send({ 
         erro: 'Campos obrigatórios: servico_id, data_hora' 

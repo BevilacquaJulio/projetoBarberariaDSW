@@ -4,11 +4,13 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Barbeiro {
-  id: number;
+  id?: number;
   nome: string;
-  especialidade: string;
-  foto_url: string;
-  ativo: boolean;
+  especialidade?: string;
+  foto_url?: string;
+  telefone?: string;
+  email?: string;
+  ativo?: boolean;
 }
 
 @Injectable({
@@ -25,6 +27,10 @@ export class BarbeiroService {
 
   buscar(id: number): Observable<Barbeiro> {
     return this.http.get<Barbeiro>(`${environment.apiUrl}/barbeiro/${id}`);
+  }
+
+  criar(barbeiro: Partial<Barbeiro>): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/barbeiro`, barbeiro);
   }
 }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { AgendamentoService, Agendamento } from '../../core/services/agendamento.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-agendamentos',
@@ -19,7 +20,8 @@ export class AgendamentosComponent implements OnInit {
 
   constructor(
     private agendamentoService: AgendamentoService,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -28,21 +30,50 @@ export class AgendamentosComponent implements OnInit {
 
   carregarAgendamentos() {
     this.carregando = true;
-    this.agendamentoService.listarMeus().subscribe({
+    this.erro = '';
+    
+    // Se for admin, busca todos os agendamentos
+    const isAdmin = this.authService.isAdmin();
+    const usuario = this.authService.getUsuario();
+    const isAdminUser = isAdmin || usuario?.role === 'administrador';
+    
+    const request = isAdminUser 
+      ? this.agendamentoService.listarTodos()
+      : this.agendamentoService.listarMeus();
+    
+    request.subscribe({
       next: (response) => {
-        this.agendamentos = response.agendamentos;
+        console.log('Agendamentos recebidos (página agendamentos):', response);
+        this.agendamentos = response.agendamentos || [];
+        console.log('Total de agendamentos carregados:', this.agendamentos.length);
         this.carregando = false;
       },
       error: (err) => {
         this.erro = 'Erro ao carregar agendamentos';
         this.carregando = false;
-        console.error(err);
+        console.error('Erro ao carregar agendamentos:', err);
       }
     });
   }
 
   formatarData(dataHora: string): string {
-    const data = new Date(dataHora);
+    if (!dataHora) return '';
+    
+    // Tenta parsear a data de diferentes formatos
+    let data: Date;
+    try {
+      // Backend retorna: "YYYY-MM-DD HH:MM:SS"
+      const dataFormatada = dataHora.replace(' ', 'T');
+      data = new Date(dataFormatada);
+      
+      if (isNaN(data.getTime())) {
+        data = new Date(dataHora);
+      }
+    } catch (e) {
+      console.error('Erro ao formatar data:', e);
+      return dataHora;
+    }
+    
     return data.toLocaleDateString('pt-BR', { 
       day: '2-digit', 
       month: '2-digit', 
@@ -120,6 +151,31 @@ export class AgendamentosComponent implements OnInit {
 
   podeAcoes(status: string): boolean {
     return status === 'agendado';
+  }
+
+  podeCancelar(status: string): boolean {
+    // Apenas agendamentos com status 'agendado' podem ser cancelados
+    return status === 'agendado';
+  }
+
+  podeDeletar(status: string): boolean {
+    // Admin pode deletar qualquer agendamento, clientes apenas os 'agendado'
+    const isAdmin = this.authService.isAdmin();
+    const usuario = this.authService.getUsuario();
+    const isAdminUser = isAdmin || usuario?.role === 'administrador';
+    
+    return isAdminUser || status === 'agendado';
+  }
+
+  formatarPreco(preco: number | string | undefined): string {
+    if (!preco) return '0,00';
+    
+    // Converte para número se for string
+    const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
+    
+    if (isNaN(valor)) return '0,00';
+    
+    return valor.toFixed(2).replace('.', ',');
   }
 }
 

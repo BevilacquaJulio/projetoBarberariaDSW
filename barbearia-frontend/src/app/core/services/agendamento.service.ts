@@ -16,6 +16,9 @@ export interface Agendamento {
   servico_nome?: string;
   servico_preco?: number;
   servico_duracao?: number;
+  usuario_nome?: string;
+  usuario_telefone?: string;
+  usuario_email?: string;
 }
 
 @Injectable({
@@ -32,6 +35,10 @@ export class AgendamentoService {
 
   listarMeus(): Observable<{ agendamentos: Agendamento[] }> {
     return this.http.get<{ agendamentos: Agendamento[] }>(`${environment.apiUrl}/agendamentos`);
+  }
+
+  listarTodos(): Observable<{ agendamentos: Agendamento[] }> {
+    return this.http.get<{ agendamentos: Agendamento[] }>(`${environment.apiUrl}/agendamentos/todos`);
   }
 
   buscar(id: number): Observable<Agendamento> {

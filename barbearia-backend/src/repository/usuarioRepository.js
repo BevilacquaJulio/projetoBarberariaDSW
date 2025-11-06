@@ -17,15 +17,16 @@ export async function validarCredenciais(email, senha) {
 
 export async function criarConta(novoCliente) {
   const comando = `
-    INSERT INTO clientes (nome, telefone, email, endereco)
-               VALUES (?, ?, ?, ?)
+    INSERT INTO clientes (nome, telefone, email, endereco, data_nascimento)
+               VALUES (?, ?, ?, ?, ?)
   `
 
   const [info] = await connection.query(comando, [
     novoCliente.nome,
     novoCliente.telefone || null,
-    novoCliente.email,
-    novoCliente.endereco || null
+    novoCliente.email || null,
+    novoCliente.endereco || null,
+    novoCliente.data_nascimento || null
   ])
   return info.insertId
 }

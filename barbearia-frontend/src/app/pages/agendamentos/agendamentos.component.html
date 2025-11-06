@@ -52,9 +52,15 @@
 
               <div class="agendamento-body">
                 <div class="info-grid">
+                  @if (authService.isAdmin() && agendamento.usuario_nome) {
+                    <div class="info-item">
+                      <span class="label">Cliente:</span>
+                      <span class="value">{{ agendamento.usuario_nome }}</span>
+                    </div>
+                  }
                   <div class="info-item">
-                    <span class="label">Barbeiro:</span>
-                    <span class="value">{{ agendamento.barbeiro_nome }}</span>
+                    <span class="label">Serviço:</span>
+                    <span class="value">{{ agendamento.servico_nome }}</span>
                   </div>
                   <div class="info-item">
                     <span class="label">Duração:</span>
@@ -62,7 +68,7 @@
                   </div>
                   <div class="info-item">
                     <span class="label">Valor:</span>
-                    <span class="value preco">R$ {{ agendamento.servico_preco?.toFixed(2) }}</span>
+                    <span class="value preco">R$ {{ formatarPreco(agendamento.servico_preco) }}</span>
                   </div>
                 </div>
 
@@ -73,14 +79,18 @@
                 }
               </div>
 
-              @if (podeAcoes(agendamento.status || '')) {
+              @if (podeCancelar(agendamento.status || '') || podeDeletar(agendamento.status || '')) {
                 <div class="agendamento-footer">
-                  <button class="btn btn-secondary btn-sm" (click)="cancelarAgendamento(agendamento.id)">
-                    Cancelar
-                  </button>
-                  <button class="btn btn-danger btn-sm" (click)="deletarAgendamento(agendamento.id)">
-                    Deletar
-                  </button>
+                  @if (podeCancelar(agendamento.status || '')) {
+                    <button class="btn btn-secondary btn-sm" (click)="cancelarAgendamento(agendamento.id)">
+                      Cancelar
+                    </button>
+                  }
+                  @if (podeDeletar(agendamento.status || '')) {
+                    <button class="btn btn-danger btn-sm" (click)="deletarAgendamento(agendamento.id)">
+                      Deletar
+                    </button>
+                  }
                 </div>
               }
             </div>

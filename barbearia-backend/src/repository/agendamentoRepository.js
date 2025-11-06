@@ -29,10 +29,14 @@ export async function listarAgendamentosPorUsuario(clienteId) {
       a.status,
       a.observacoes,
       a.created_at as criado_em,
+      c.nome as usuario_nome,
+      c.telefone as usuario_telefone,
+      c.email as usuario_email,
       s.nome as servico_nome,
       s.preco as servico_preco,
       s.duracao_minutos as servico_duracao
     FROM agendamentos a
+    JOIN clientes c ON a.cliente_id = c.id
     JOIN servicos s ON a.servico_id = s.id
     WHERE a.cliente_id = ?
     ORDER BY a.data_agendamento DESC, a.hora_agendamento DESC
@@ -53,6 +57,7 @@ export async function listarTodosAgendamentos() {
       a.created_at as criado_em,
       c.nome as usuario_nome,
       c.telefone as usuario_telefone,
+      c.email as usuario_email,
       s.nome as servico_nome,
       s.preco as servico_preco,
       s.duracao_minutos as servico_duracao

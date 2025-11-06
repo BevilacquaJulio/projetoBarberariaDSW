@@ -17,31 +17,6 @@
         atendimento personalizado e equipes capacitadas em cortes, coloração e tratamentos.
       </p>
       
-      <!-- Upload de Imagem (visível apenas para administradores) -->
-      <div class="upload-section" *ngIf="isAdmin">
-        <input 
-          type="file" 
-          (change)="onFileSelected($event)" 
-          accept="image/*" 
-          class="file-input"
-          #fileInput>
-        <button class="btn-upload" (click)="fileInput.click()">
-          Selecionar Imagem
-        </button>
-
-        <div *ngIf="selectedFile" class="upload-meta">
-          <input type="text" placeholder="Título" [(ngModel)]="newTitulo" />
-          <input type="text" placeholder="Descrição" [(ngModel)]="newDescricao" />
-          <input type="number" placeholder="Preço" [(ngModel)]="newPreco" />
-          <div class="upload-actions">
-            <button class="btn-upload" (click)="enviarImagem()">Enviar</button>
-            <button class="btn-cancel" (click)="selectedFile = undefined">Cancelar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Galeria removida do topo: imagens serão exibidas apenas nos cards de serviço -->
-      
       <button class="btn-hero" (click)="agendar()">
         Agendar Horário
       </button>
@@ -84,7 +59,7 @@
           <p class="servico-descricao">{{ getServicoDescricao(i) }}</p>
           <div class="servico-footer">
             <span class="servico-preco">R$ {{ getServicoPreco(i) | number:'1.2-2' }}</span>
-            <button class="btn-agendar" (click)="agendar()">Agendar</button>
+            <button class="btn-agendar" (click)="agendar(servico.nome)">Agendar</button>
           </div>
         </div>
       </div>

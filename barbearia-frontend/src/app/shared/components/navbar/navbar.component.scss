@@ -11,20 +11,35 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
+    min-width: 0; // Permite que os elementos encolham se necessário
   }
 
   .navbar-brand {
+    flex-shrink: 1;
+    min-width: 0;
+    
     a {
       text-decoration: none;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
       
       h1 {
-        font-size: 24px;
+        font-size: 20px;
         margin: 0;
         background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        @media (max-width: 1200px) {
+          font-size: 18px;
+        }
       }
     }
   }
@@ -46,8 +61,13 @@
 
   .navbar-menu {
     display: flex;
-    gap: 20px;
+    gap: 12px;
     align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-end;
 
     @media (max-width: 768px) {
       position: absolute;
@@ -62,6 +82,8 @@
       transform: translateY(-200%);
       opacity: 0;
       transition: all 0.3s ease;
+      flex-wrap: wrap;
+      justify-content: flex-start;
 
       &.active {
         transform: translateY(0);
@@ -70,33 +92,66 @@
     }
 
     a {
-      color: var(--text-dark);
+      color: #1f2937;
       text-decoration: none;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 0.5px;
       transition: all 0.3s ease;
-      padding: 8px 0;
+      padding: 8px 10px;
+      white-space: nowrap;
+      display: inline-block;
+      flex-shrink: 0;
+
+      @media (max-width: 1200px) {
+        font-size: 12px;
+        padding: 8px 8px;
+      }
 
       &:hover {
-        color: var(--primary-purple);
+        color: #667eea;
+        background-color: rgba(102, 126, 234, 0.05);
+        border-radius: 6px;
       }
 
       &.active {
-        color: var(--primary-purple);
-        border-bottom: 2px solid var(--primary-purple);
+        color: #667eea !important;
+        background-color: rgba(102, 126, 234, 0.15) !important;
+        border-bottom: 2px solid #667eea;
+        border-radius: 6px;
+        font-weight: 700;
       }
 
       @media (max-width: 768px) {
         width: 100%;
         text-align: center;
         padding: 12px;
+        white-space: normal;
+        font-size: 14px;
       }
     }
 
     button {
+      white-space: nowrap;
+      margin-left: 4px;
+      flex-shrink: 0;
+      font-size: 13px;
+      padding: 8px 16px;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      @media (max-width: 1200px) {
+        font-size: 12px;
+        padding: 8px 12px;
+        max-width: 150px;
+      }
+
       @media (max-width: 768px) {
         width: 100%;
+        margin-left: 0;
+        margin-top: 8px;
+        max-width: 100%;
       }
     }
 

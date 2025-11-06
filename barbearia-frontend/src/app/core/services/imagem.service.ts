@@ -13,8 +13,8 @@ export class ImagemService {
   constructor(private http: HttpClient) { }
 
   // Listar todas as imagens (com metadados)
-  listarImagens(): Observable<{ imagens: { id: number; filename: string; titulo?: string; descricao?: string; preco?: number }[] }> {
-    return this.http.get<{ imagens: { id: number; filename: string; titulo?: string; descricao?: string; preco?: number }[] }>(this.apiUrl);
+  listarImagens(): Observable<{ imagens: { id: number; filename: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number }[] }> {
+    return this.http.get<{ imagens: { id: number; filename: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number }[] }>(this.apiUrl);
   }
 
   // Upload de uma nova imagem com metadados opcionais

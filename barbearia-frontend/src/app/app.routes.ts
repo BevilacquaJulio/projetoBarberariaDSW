@@ -31,6 +31,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'novo-barbeiro',
+    loadComponent: () => import('./pages/novo-barbeiro/novo-barbeiro.component').then(m => m.NovoBarbeiroComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: '/home'
   }

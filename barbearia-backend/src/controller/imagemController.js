@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { inserirImagem, listarImagens as listarImagensRepo, atualizarImagemByFilename, atualizarImagemById } from '../repository/imagemRepository.js';
+import { inserirImagem, listarImagens as listarImagensRepo, atualizarImagemByFilename, atualizarImagemById, registrarImagensExistentes } from '../repository/imagemRepository.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,11 +26,27 @@ class ImagemController {
             const imagePath = path.join(__dirname, '..', 'uploads', filename);
 
             if (!fs.existsSync(imagePath)) {
+                console.error(`Imagem não encontrada: ${imagePath}`);
                 return res.status(404).json({ message: 'Imagem não encontrada' });
             }
 
-            res.setHeader('Content-Type', 'image/*');
-            res.sendFile(imagePath);
+            // Determina o Content-Type baseado na extensão
+            const ext = path.extname(filename).toLowerCase();
+            const contentTypeMap = {
+                '.png': 'image/png',
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.gif': 'image/gif',
+                '.webp': 'image/webp'
+            };
+            const contentType = contentTypeMap[ext] || 'image/png';
+
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache por 1 ano
+            
+            // Usa path absoluto para sendFile
+            const absolutePath = path.resolve(imagePath);
+            res.sendFile(absolutePath);
         } catch (error) {
             console.error('Erro ao carregar imagem:', error);
             res.status(500).json({ message: 'Erro ao carregar imagem' });
@@ -98,6 +114,81 @@ class ImagemController {
         } catch (err) {
             console.error('Erro ao atualizar imagem:', err);
             return res.status(500).json({ error: 'Erro interno' });
+        }
+    }
+
+    // Endpoint para registrar imagens já existentes na pasta uploads/ (admin)
+    async registrarImagensExistentes(req, res) {
+        const user = req.user;
+        if (!user || (user.role !== 'admin' && user.role !== 'administrador')) {
+            return res.status(403).json({ error: 'Acesso negado' });
+        }
+
+        try {
+            const { imagens } = req.body;
+            
+            if (!Array.isArray(imagens) || imagens.length === 0) {
+                return res.status(400).json({ error: 'Array de imagens é obrigatório' });
+            }
+
+            // Valida cada imagem
+            for (const img of imagens) {
+                if (!img.filename) {
+                    return res.status(400).json({ error: 'Campo filename é obrigatório para cada imagem' });
+                }
+                
+                // Verifica se o arquivo existe na pasta uploads/
+                const imagePath = path.join(__dirname, '..', 'uploads', img.filename);
+                if (!fs.existsSync(imagePath)) {
+                    return res.status(400).json({ 
+                        error: `Imagem ${img.filename} não encontrada na pasta uploads/` 
+                    });
+                }
+            }
+
+            const results = await registrarImagensExistentes(imagens);
+            
+            const sucessos = results.filter(r => r.success).length;
+            const falhas = results.filter(r => !r.success).length;
+
+            res.json({
+                message: `Processamento concluído: ${sucessos} sucesso(s), ${falhas} falha(s)`,
+                total: imagens.length,
+                sucessos,
+                falhas,
+                resultados: results
+            });
+        } catch (error) {
+            console.error('Erro ao registrar imagens existentes:', error);
+            res.status(500).json({ error: 'Erro interno do servidor', detalhes: error.message });
+        }
+    }
+
+    // Endpoint para listar arquivos da pasta uploads/ (admin)
+    async listarArquivosUploads(req, res) {
+        const user = req.user;
+        if (!user || (user.role !== 'admin' && user.role !== 'administrador')) {
+            return res.status(403).json({ error: 'Acesso negado' });
+        }
+
+        try {
+            const uploadsDir = path.join(__dirname, '..', 'uploads');
+            const arquivos = fs.readdirSync(uploadsDir)
+                .filter(file => {
+                    const filePath = path.join(uploadsDir, file);
+                    return fs.statSync(filePath).isFile() && 
+                           /\.(jpg|jpeg|png|gif|webp)$/i.test(file);
+                })
+                .map(file => ({
+                    filename: file,
+                    path: path.join(uploadsDir, file),
+                    size: fs.statSync(path.join(uploadsDir, file)).size
+                }));
+
+            res.json({ arquivos, total: arquivos.length });
+        } catch (error) {
+            console.error('Erro ao listar arquivos:', error);
+            res.status(500).json({ error: 'Erro ao listar arquivos' });
         }
     }
 }

@@ -98,7 +98,7 @@ endpoints.get('/usuario/perfil', autenticador, async (req, resp) => {
 
 endpoints.get('/usuarios', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { ServicoService, Servico } from '../../core/services/servico.service';
 import { ImagemService } from '../../core/services/imagem.service';
@@ -31,7 +30,6 @@ export class HomeComponent implements OnInit {
   constructor(
     private servicoService: ServicoService,
     private imagemService: ImagemService,
-    private router: Router,
     private authService: AuthService
   ) {}
 
@@ -103,8 +101,25 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  agendar() {
-    this.router.navigate(['/login']);
+  agendar(servicoNome?: string) {
+    // Número do WhatsApp (formato: 5511990227689 - código do país + DDD + número)
+    const whatsappNumber = '5511990227689';
+    
+    // Mensagem pré-formatada
+    let mensagem = 'Olá! Gostaria de agendar um horário.';
+    
+    if (servicoNome) {
+      mensagem = `Olá! Gostaria de agendar um horário para o serviço: ${servicoNome}.`;
+    }
+    
+    // Codifica a mensagem para URL
+    const mensagemEncoded = encodeURIComponent(mensagem);
+    
+    // Cria o link do WhatsApp
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${mensagemEncoded}`;
+    
+    // Abre o WhatsApp em nova aba
+    window.open(whatsappUrl, '_blank');
   }
 
   // Método para lidar com o upload de imagem

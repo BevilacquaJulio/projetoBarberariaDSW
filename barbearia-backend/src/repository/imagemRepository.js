@@ -60,3 +60,34 @@ async function atualizarImagemById(id, { servico_id, titulo, descricao, preco })
 }
 
 export { atualizarImagemById };
+
+// Registra imagem já existente (verifica se não existe antes)
+async function registrarImagemExistente({ filename, servico_id = null, titulo = null, descricao = null, preco = null }) {
+  // Verifica se já existe
+  const checkSql = `SELECT id FROM imagens WHERE filename = ?`;
+  const [existing] = await connection.execute(checkSql, [filename]);
+  
+  if (existing.length > 0) {
+    // Se existe, atualiza
+    return await atualizarImagemByFilename(filename, { servico_id, titulo, descricao, preco });
+  } else {
+    // Se não existe, insere
+    return await inserirImagem({ filename, servico_id, titulo, descricao, preco });
+  }
+}
+
+// Registra múltiplas imagens de uma vez
+async function registrarImagensExistentes(imagens) {
+  const results = [];
+  for (const img of imagens) {
+    try {
+      const result = await registrarImagemExistente(img);
+      results.push({ filename: img.filename, success: true, result });
+    } catch (error) {
+      results.push({ filename: img.filename, success: false, error: error.message });
+    }
+  }
+  return results;
+}
+
+export { registrarImagemExistente, registrarImagensExistentes };

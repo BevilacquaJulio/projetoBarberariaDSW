@@ -26,6 +26,11 @@
           <a routerLink="/novo-agendamento" routerLinkActive="active" (click)="menuAberto = false">
             Novo Agendamento
           </a>
+          @if (authService.isAdmin()) {
+            <a routerLink="/novo-barbeiro" routerLinkActive="active" (click)="menuAberto = false">
+              Novo Barbeiro
+            </a>
+          }
           <button class="btn btn-secondary" (click)="logout()">
             Sair ({{ usuario?.nome }})
           </button>
