@@ -1,7 +1,0 @@
-node_modules
-/dist
-/.angular/cache
-.DS_Store
-Thumbs.db
-*.md
-
