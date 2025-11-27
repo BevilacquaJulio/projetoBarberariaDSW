@@ -35,6 +35,7 @@ export async function listarServicosComImagem() {
       (SELECT preco FROM imagens i WHERE i.servico_id = s.id ORDER BY i.criado_em DESC LIMIT 1) as imagem_preco
       FROM servicos s
      WHERE s.ativo = TRUE
+       AND EXISTS (SELECT 1 FROM imagens i WHERE i.servico_id = s.id)
      ORDER BY s.id
   `;
   const [registros] = await connection.query(comando);
