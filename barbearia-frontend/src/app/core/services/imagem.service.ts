@@ -7,17 +7,14 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ImagemService {
-  // Ajuste: backend usa rota com prefixo /api
   private apiUrl = `${environment.apiUrl}/api/imagens`;
 
   constructor(private http: HttpClient) { }
 
-  // Listar todas as imagens (com metadados)
   listarImagens(): Observable<{ imagens: { id: number; filename: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number }[] }> {
     return this.http.get<{ imagens: { id: number; filename: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number }[] }>(this.apiUrl);
   }
 
-  // Upload de uma nova imagem com metadados opcionais
   uploadImagem(file: File, metadata?: { titulo?: string; descricao?: string; preco?: number }): Observable<any> {
     const formData = new FormData();
     formData.append('imagem', file);
@@ -28,7 +25,6 @@ export class ImagemService {
     return this.http.post(`${this.apiUrl}/upload`, formData);
   }
 
-  // Obter a URL completa de uma imagem
   getImagemUrl(filename: string): string {
     return `${this.apiUrl}/${filename}`;
   }

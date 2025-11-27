@@ -1,11 +1,6 @@
--- Script SQL para criação do banco de dados GV Cabeleireiro
--- Sistema de gestão de salão de cabeleireiro - Guilherme Vasconcelos
-
--- Criar banco de dados (se não existir)
 CREATE DATABASE IF NOT EXISTS gv_banco;
 USE gv_banco;
 
--- Tabela de usuário administrador (apenas administrador)
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -16,7 +11,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabela de clientes
 CREATE TABLE IF NOT EXISTS clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -30,7 +24,6 @@ CREATE TABLE IF NOT EXISTS clientes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabela de serviços oferecidos
 CREATE TABLE IF NOT EXISTS servicos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -42,7 +35,6 @@ CREATE TABLE IF NOT EXISTS servicos (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabela de agendamentos
 CREATE TABLE IF NOT EXISTS agendamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
@@ -60,12 +52,9 @@ CREATE TABLE IF NOT EXISTS agendamentos (
     INDEX idx_cliente (cliente_id)
 );
 
--- Inserir usuário administrador padrão
--- Senha: admin123 (hash gerado com bcrypt)
 INSERT INTO usuarios (nome, email, senha, tipo) VALUES 
 ('Administrador', 'admin@gv.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'administrador');
 
--- Inserir alguns serviços de exemplo
 INSERT INTO servicos (nome, descricao, preco, duracao_minutos, ativo) VALUES 
 ('Corte Feminino', 'Corte de cabelo feminino com lavagem e secagem', 114.99, 60, TRUE),
 ('Coloração', 'Coloração completa do cabelo', 279.99, 120, TRUE),
@@ -74,7 +63,6 @@ INSERT INTO servicos (nome, descricao, preco, duracao_minutos, ativo) VALUES
 ('Escova', 'Penteado para eventos', 269.99, 120, TRUE),
 ('Maquiagem', 'Maquiagem para eventos', 299.99, 120, TRUE);
 
--- Inserir alguns clientes de exemplo
 INSERT INTO clientes (nome, telefone, email, data_nascimento, observacoes) VALUES 
 ('Maria Silva', '(11) 99999-1111', 'maria@email.com', '1985-03-15', 'Cliente preferencial, gosta de cortes curtos'),
 ('João Santos', '(11) 99999-2222', 'joao@email.com', '1990-07-22', 'Prefere horários da manhã'),
@@ -82,7 +70,6 @@ INSERT INTO clientes (nome, telefone, email, data_nascimento, observacoes) VALUE
 ('Carlos Oliveira', '(11) 99999-4444', 'carlos@email.com', '1988-05-30', 'Cliente novo, ainda conhecendo os serviços'),
 ('Fernanda Lima', '(11) 99999-5555', 'fernanda@email.com', '1995-09-12', 'Gosta de experimentar novos cortes');
 
--- Inserir alguns agendamentos de exemplo
 INSERT INTO agendamentos (cliente_id, servico_id, data_agendamento, hora_agendamento, observacoes, status) VALUES 
 (1, 1, '2024-01-15', '09:00:00', 'Corte de manutenção', 'agendado'),
 (2, 2, '2024-01-15', '10:30:00', 'Primeira vez no salão', 'confirmado'),
@@ -90,13 +77,11 @@ INSERT INTO agendamentos (cliente_id, servico_id, data_agendamento, hora_agendam
 (4, 4, '2024-01-16', '09:30:00', 'Hidratação profunda', 'agendado'),
 (5, 5, '2024-01-16', '11:00:00', 'Escova para evento', 'confirmado');
 
--- Criar índices adicionais para melhor performance
 CREATE INDEX idx_clientes_telefone ON clientes(telefone);
 CREATE INDEX idx_clientes_nome ON clientes(nome);
 CREATE INDEX idx_servicos_ativo ON servicos(ativo);
 CREATE INDEX idx_agendamentos_data ON agendamentos(data_agendamento);
 
--- Criar view para relatórios de agendamentos
 CREATE VIEW vw_agendamentos_completos AS
 SELECT 
     a.id,
@@ -116,7 +101,6 @@ FROM agendamentos a
 LEFT JOIN clientes c ON a.cliente_id = c.id
 LEFT JOIN servicos s ON a.servico_id = s.id;
 
--- Criar view para relatórios financeiros
 CREATE VIEW vw_faturamento_diario AS
 SELECT 
     DATE(a.data_agendamento) as data,
@@ -129,7 +113,6 @@ LEFT JOIN servicos s ON a.servico_id = s.id
 GROUP BY DATE(a.data_agendamento)
 ORDER BY data DESC;
 
--- Mostrar informações do banco criado
 SELECT 'Banco de dados GV Cabeleireiro (Guilherme Vasconcelos) criado com sucesso!' as status;
 SELECT COUNT(*) as total_usuarios FROM usuarios;
 SELECT COUNT(*) as total_clientes FROM clientes;

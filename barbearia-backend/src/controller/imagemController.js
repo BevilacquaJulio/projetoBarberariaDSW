@@ -8,7 +8,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 class ImagemController {
-    // Endpoint para listar todas as imagens
     async listarImagens(req, res) {
         try {
             const rows = await listarImagensRepo();
@@ -27,11 +26,10 @@ class ImagemController {
 
             if (!fs.existsSync(imagePath)) {
                 console.error(`Imagem não encontrada: ${imagePath}`);
-                return res.status(404).json({ message: 'Imagem não encontrada' });
-            }
+            return res.status(404).json({ message: 'Imagem não encontrada' });
+        }
 
-            // Determina o Content-Type baseado na extensão
-            const ext = path.extname(filename).toLowerCase();
+        const ext = path.extname(filename).toLowerCase();
             const contentTypeMap = {
                 '.png': 'image/png',
                 '.jpg': 'image/jpeg',
@@ -42,9 +40,8 @@ class ImagemController {
             const contentType = contentTypeMap[ext] || 'image/png';
 
             res.setHeader('Content-Type', contentType);
-            res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache por 1 ano
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
             
-            // Usa path absoluto para sendFile
             const absolutePath = path.resolve(imagePath);
             res.sendFile(absolutePath);
         } catch (error) {
@@ -62,7 +59,6 @@ class ImagemController {
 
             const filename = req.file.filename;
 
-            // opcional: metadados enviados no form
             const titulo = req.body.titulo || null;
             const descricao = req.body.descricao || null;
             const preco = req.body.preco ? parseFloat(req.body.preco) : null;
@@ -72,7 +68,6 @@ class ImagemController {
                 await inserirImagem({ filename, servico_id: servicoId, titulo, descricao, preco });
             } catch (err) {
                 console.error('Erro ao inserir metadados da imagem:', err);
-                // não falha o upload se a inserção de metadados falhar; apenas loga
             }
 
             res.status(201).json({ 
@@ -86,7 +81,6 @@ class ImagemController {
         }
     }
 
-    // Endpoint para atualizar metadados da imagem (admin)
     async atualizarImagem(req, res) {
         const user = req.user;
         if (!user || (user.role !== 'admin' && user.role !== 'administrador')) {
@@ -117,7 +111,6 @@ class ImagemController {
         }
     }
 
-    // Endpoint para registrar imagens já existentes na pasta uploads/ (admin)
     async registrarImagensExistentes(req, res) {
         const user = req.user;
         if (!user || (user.role !== 'admin' && user.role !== 'administrador')) {
@@ -131,13 +124,11 @@ class ImagemController {
                 return res.status(400).json({ error: 'Array de imagens é obrigatório' });
             }
 
-            // Valida cada imagem
             for (const img of imagens) {
                 if (!img.filename) {
                     return res.status(400).json({ error: 'Campo filename é obrigatório para cada imagem' });
                 }
                 
-                // Verifica se o arquivo existe na pasta uploads/
                 const imagePath = path.join(__dirname, '..', 'uploads', img.filename);
                 if (!fs.existsSync(imagePath)) {
                     return res.status(400).json({ 
@@ -164,7 +155,6 @@ class ImagemController {
         }
     }
 
-    // Endpoint para listar arquivos da pasta uploads/ (admin)
     async listarArquivosUploads(req, res) {
         const user = req.user;
         if (!user || (user.role !== 'admin' && user.role !== 'administrador')) {

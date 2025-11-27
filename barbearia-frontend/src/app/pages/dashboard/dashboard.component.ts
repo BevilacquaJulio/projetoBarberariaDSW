@@ -30,7 +30,6 @@ export class DashboardComponent implements OnInit {
   }
 
   carregarAgendamentos() {
-    // Se for admin, busca todos os agendamentos
     const isAdmin = this.authService.isAdmin() || this.usuario?.role === 'administrador';
     
     const request = isAdmin 
@@ -69,7 +68,6 @@ export class DashboardComponent implements OnInit {
     
     console.log('Data/hora atual:', agora.toISOString());
     
-    // Filtra apenas por status 'agendado' primeiro (sem verificar data)
     const agendados = this.agendamentos.filter(a => {
       if (!a.status) return false;
       const statusNormalizado = (a.status || '').toLowerCase().trim();
@@ -78,7 +76,6 @@ export class DashboardComponent implements OnInit {
     
     console.log('Agendamentos com status "agendado":', agendados.length);
     
-    // Agora filtra por data futura
     this.agendamentosProximos = agendados
       .filter(a => {
         if (!a.data_hora) {
@@ -86,14 +83,11 @@ export class DashboardComponent implements OnInit {
           return false;
         }
         
-        // Tenta parsear a data de diferentes formatos
         let dataAgendamento: Date;
         try {
-          // O backend retorna no formato: "YYYY-MM-DD HH:MM:SS"
           const dataFormatada = a.data_hora.replace(' ', 'T');
           dataAgendamento = new Date(dataFormatada);
           
-          // Se o parse falhou, tenta outro formato
           if (isNaN(dataAgendamento.getTime())) {
             dataAgendamento = new Date(a.data_hora);
           }
@@ -140,10 +134,8 @@ export class DashboardComponent implements OnInit {
   formatarData(dataHora: string): string {
     if (!dataHora) return '';
     
-    // Tenta parsear a data de diferentes formatos
     let data: Date;
     try {
-      // Backend retorna: "YYYY-MM-DD HH:MM:SS"
       const dataFormatada = dataHora.replace(' ', 'T');
       data = new Date(dataFormatada);
       
@@ -232,7 +224,6 @@ export class DashboardComponent implements OnInit {
   formatarPreco(preco: number | string | undefined): string {
     if (!preco) return '0,00';
     
-    // Converte para número se for string
     const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
     
     if (isNaN(valor)) return '0,00';
@@ -243,7 +234,6 @@ export class DashboardComponent implements OnInit {
   abrirWhatsApp(agendamento: Agendamento) {
     if (!agendamento.usuario_telefone) return;
     
-    // Remove caracteres não numéricos
     const telefone = agendamento.usuario_telefone.replace(/\D/g, '');
     const mensagem = `Olá ${agendamento.usuario_nome || 'cliente'}! Gostaria de confirmar seu agendamento para ${this.formatarData(agendamento.data_hora)}.`;
     const whatsappUrl = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;

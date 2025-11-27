@@ -16,12 +16,10 @@ import { AuthService } from '../../core/services/auth.service';
 export class HomeComponent implements OnInit {
   servicos: Servico[] = [];
   imagens: Array<{ id?: number; filename: string; url: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number }> = [];
-  // Mapas para associar imagens diretamente ao serviço e evitar fallback por índice
   imagensByServico: { [servicoId: number]: { id?: number; filename: string; url: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number } } = {};
   imagensByFilename: { [filename: string]: { id?: number; filename: string; url: string; servico_id?: number; titulo?: string; descricao?: string; preco?: number } } = {};
   isAdmin: boolean = false;
   @ViewChild('galeria') galeriaRef!: ElementRef<HTMLDivElement>;
-  // campos para upload com metadados
   selectedFile?: File;
   newTitulo: string = '';
   newDescricao: string = '';
@@ -40,10 +38,7 @@ export class HomeComponent implements OnInit {
   }
 
   verificarAdmin() {
-    // Usa o AuthService (centralizado) para verificar se é admin
     this.isAdmin = this.authService.isAdmin();
-
-    // Atualiza dinamicamente quando o usuário muda (login/logout)
     this.authService.usuario$.subscribe(u => {
       this.isAdmin = !!u && this.authService.isAdmin();
     });
@@ -58,28 +53,22 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // Retorna uma imagem para um serviço baseado no índice (usa imagens carregadas como fonte)
   getServicoImage(index: number): string {
-    // Primeiro, tente usar a imagem associada ao serviço (se o backend retornar imagem_filename)
     const servico = this.servicos && this.servicos[index];
     if (servico && (servico as any).imagem_filename) {
       return this.imagemService.getImagemUrl((servico as any).imagem_filename);
     }
 
-    // Senão, tente usar imagem associada pelo servico_id (mapa)
     if (servico && this.imagensByServico && this.imagensByServico[servico.id]) {
       return this.imagensByServico[servico.id].url;
     }
 
-    // fallback para asset local
     return 'assets/img/default-service.jpg';
   }
 
   carregarImagens() {
     this.imagemService.listarImagens().subscribe({
       next: (response) => {
-        // response.imagens agora contém objetos com metadados
-        // Prepara array de imagens com metadados e popula mapas de lookup
         this.imagens = response.imagens.map(img => ({
           id: img.id,
           filename: img.filename,
@@ -102,33 +91,22 @@ export class HomeComponent implements OnInit {
   }
 
   agendar(servicoNome?: string) {
-    // Número do WhatsApp (formato: 5511990227689 - código do país + DDD + número)
     const whatsappNumber = '5511990227689';
-    
-    // Mensagem pré-formatada
     let mensagem = 'Olá! Gostaria de agendar um horário.';
     
     if (servicoNome) {
       mensagem = `Olá! Gostaria de agendar um horário para o serviço: ${servicoNome}.`;
     }
     
-    // Codifica a mensagem para URL
     const mensagemEncoded = encodeURIComponent(mensagem);
-    
-    // Cria o link do WhatsApp
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${mensagemEncoded}`;
-    
-    // Abre o WhatsApp em nova aba
     window.open(whatsappUrl, '_blank');
   }
 
-  // Método para lidar com o upload de imagem
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.selectedFile = input.files[0];
-      // se quiser fazer upload automático sem metadados, descomente abaixo:
-      // this.enviarImagem();
     }
   }
 
@@ -138,7 +116,6 @@ export class HomeComponent implements OnInit {
     if (this.newTitulo) metadata.titulo = this.newTitulo;
     if (this.newDescricao) metadata.descricao = this.newDescricao;
     if (this.newPreco != null) metadata.preco = this.newPreco;
-    // se futuramente houver seleção de serviço no form
     if ((this as any).selectedServicoId) metadata.servicoId = (this as any).selectedServicoId;
 
     this.imagemService.uploadImagem(this.selectedFile, metadata).subscribe({
@@ -152,10 +129,8 @@ export class HomeComponent implements OnInit {
           preco: metadata.preco || undefined
         };
         this.imagens.unshift(novaImagem);
-        // Atualiza mapas para evitar repetição por índice
         if (novaImagem.filename) this.imagensByFilename[novaImagem.filename] = novaImagem;
         if (novaImagem.servico_id) this.imagensByServico[novaImagem.servico_id] = novaImagem;
-        // limpa campos
         this.selectedFile = undefined;
         this.newTitulo = '';
         this.newDescricao = '';
@@ -165,18 +140,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // Método para obter a URL completa de uma imagem
   getImagemUrl(filename: string): string {
     return this.imagemService.getImagemUrl(filename);
   }
 
-  // Retorna a descrição a ser mostrada no card do serviço.
-  // Prioriza a descrição da imagem associada (imagem.descricao) se existir,
-  // caso contrário retorna a descrição do próprio serviço.
   getServicoDescricao(index: number): string {
     const servico = this.servicos && this.servicos[index];
     if (!servico) return '';
-    // Prefer metadata returned directly in servico (imagem_descricao)
     if ((servico as any).imagem_descricao) return (servico as any).imagem_descricao;
 
     const imagemFilename = (servico as any).imagem_filename;
@@ -188,13 +158,9 @@ export class HomeComponent implements OnInit {
     return servico.descricao || '';
   }
 
-  // Retorna o preço a ser mostrado no card do serviço.
-  // Prioriza preco da imagem (imagem.preco) se estiver preenchido,
-  // senão usa servico.preco.
   getServicoPreco(index: number): number | null {
     const servico = this.servicos && this.servicos[index];
     if (!servico) return null;
-    // Prefer metadata returned directly in servico (imagem_preco)
     if ((servico as any).imagem_preco != null) return Number((servico as any).imagem_preco);
 
     const imagemFilename = (servico as any).imagem_filename;
@@ -206,11 +172,10 @@ export class HomeComponent implements OnInit {
     return typeof servico.preco === 'number' ? servico.preco : Number(servico.preco) || null;
   }
 
-  // Controle de scroll para a galeria (botões)
   scrollGaleria(direction: 'left' | 'right') {
     const el = this.galeriaRef?.nativeElement;
     if (!el) return;
-    const scrollAmount = el.clientWidth * 0.7; // rola ~70% da largura visível
+    const scrollAmount = el.clientWidth * 0.7;
     if (direction === 'left') {
       el.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     } else {

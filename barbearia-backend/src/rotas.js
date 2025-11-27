@@ -13,7 +13,6 @@ import { getAuthentication } from './utils/jwt.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Configuração do Multer para upload de imagens
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/'));
@@ -26,7 +25,6 @@ const storage = multer.diskStorage({
 const upload = multer({ 
     storage: storage,
     fileFilter: (req, file, cb) => {
-        // Aceita apenas imagens
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
@@ -34,26 +32,21 @@ const upload = multer({
         }
     },
     limits: {
-        fileSize: 5 * 1024 * 1024 // limite de 5MB
+        fileSize: 5 * 1024 * 1024
     }
 });
 
 export function adicionarRotas(api) {
-    // Rotas existentes
     api.use(usuarioController);
     api.use(servicoController);
     api.use(agendamentoController);
     api.use(barbeiroController);
 
-    // Rotas de imagem
     api.get('/api/imagens', imagemController.listarImagens);
     api.post('/api/imagens/upload', upload.single('imagem'), imagemController.uploadImagem);
     api.get('/api/imagens/:filename', imagemController.getImagem);
-    // Admin: atualizar metadados da imagem (usa id numérico)
     const autenticadorAdmin = getAuthentication((u) => u.role === 'admin' || u.role === 'administrador');
     api.patch('/api/imagens/:id', autenticadorAdmin, imagemController.atualizarImagem);
-    // Admin: registrar imagens já existentes na pasta uploads/
     api.post('/api/imagens/registrar-existentes', autenticadorAdmin, imagemController.registrarImagensExistentes);
-    // Admin: listar arquivos da pasta uploads/
     api.get('/api/imagens/arquivos-uploads', autenticadorAdmin, imagemController.listarArquivosUploads);
 }

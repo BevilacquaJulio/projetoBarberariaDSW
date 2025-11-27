@@ -63,7 +63,6 @@ export class AuthService {
 
   isAdmin(): boolean {
     const usuario: any = this.getUsuario();
-    // Compatível com backend que pode retornar `role` ou `tipo`.
     const role = usuario?.role || usuario?.tipo;
     if (!role) return false;
     return role === 'admin' || role === 'administrador' || role === 'ADMIN';

@@ -49,7 +49,6 @@ export class AgendamentosComponent implements OnInit {
     this.carregando = true;
     this.erro = '';
     
-    // Se for admin, busca todos os agendamentos
     const isAdmin = this.authService.isAdmin();
     const usuario = this.authService.getUsuario();
     const isAdminUser = isAdmin || usuario?.role === 'administrador';
@@ -78,10 +77,8 @@ export class AgendamentosComponent implements OnInit {
   formatarData(dataHora: string): string {
     if (!dataHora) return '';
     
-    // Tenta parsear a data de diferentes formatos
     let data: Date;
     try {
-      // Backend retorna: "YYYY-MM-DD HH:MM:SS"
       const dataFormatada = dataHora.replace(' ', 'T');
       data = new Date(dataFormatada);
       
@@ -224,12 +221,10 @@ export class AgendamentosComponent implements OnInit {
   }
 
   podeCancelar(status: string): boolean {
-    // Apenas agendamentos com status 'agendado' podem ser cancelados
     return status === 'agendado';
   }
 
   podeDeletar(status: string): boolean {
-    // Admin pode deletar qualquer agendamento, clientes apenas os 'agendado'
     const isAdmin = this.authService.isAdmin();
     const usuario = this.authService.getUsuario();
     const isAdminUser = isAdmin || usuario?.role === 'administrador';
@@ -304,7 +299,6 @@ export class AgendamentosComponent implements OnInit {
   formatarPreco(preco: number | string | undefined): string {
     if (!preco) return '0,00';
     
-    // Converte para número se for string
     const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
     
     if (isNaN(valor)) return '0,00';
