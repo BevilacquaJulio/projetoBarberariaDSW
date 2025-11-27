@@ -32,20 +32,23 @@
     }
 
     .btn-primary {
-      padding: 16px 32px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
+      padding: 14px 32px;
+      background: white;
+      color: var(--primary-purple) !important;
+      border: 2px solid var(--primary-purple);
+      border-radius: 999px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.15);
+      letter-spacing: 0.5px;
 
       &:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        box-shadow: 0 12px 26px rgba(102, 126, 234, 0.35);
       }
     }
   }
@@ -84,6 +87,50 @@
     color: white;
     text-align: center;
     font-weight: 500;
+  }
+
+  .tabs-container {
+    margin: 10px 0 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .tab-button {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 2px solid transparent;
+      font-weight: 600;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
+
+      &.active {
+        background: white;
+        color: #4c1d95;
+        border-color: #4c1d95;
+        box-shadow: 0 12px 30px rgba(79, 70, 229, 0.25);
+      }
+
+      .tab-count {
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 13px;
+        background: rgba(255, 255, 255, 0.2);
+        color: inherit;
+      }
+    }
   }
 
   .empty-state {
@@ -290,6 +337,13 @@
     color: #991b1b;
     border: 2px solid #ef4444;
   }
+
+  .status-atrasado {
+    background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+    color: #b45309;
+    border: 2px solid #fb923c;
+    animation: pulse 1.5s infinite;
+  }
 }
 
 // Animações suaves
@@ -307,5 +361,17 @@
 .agendamentos-container {
   .agendamento-card {
     animation: fadeIn 0.4s ease-out;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
   }
 }

@@ -3,7 +3,8 @@
     <div class="navbar-content">
       <div class="navbar-brand">
         <a routerLink="/home">
-          <h1>✨ Guilherme Vasconcelos</h1>
+          <img src="assets/img/logo.png" alt="Logo Guilherme Vasconcelos" class="navbar-logo" />
+          <span class="sr-only">Guilherme Vasconcelos</span>
         </a>
       </div>
 
@@ -28,11 +29,11 @@
           </a>
           @if (authService.isAdmin()) {
             <a routerLink="/novo-barbeiro" routerLinkActive="active" (click)="menuAberto = false">
-              Novo Barbeiro
+              Novo Cabeleleiro(a)
             </a>
           }
           <button class="btn btn-secondary" (click)="logout()">
-            Sair ({{ usuario?.nome }})
+            Sair
           </button>
         } @else {
           <a routerLink="/login" class="btn btn-primary" (click)="menuAberto = false">

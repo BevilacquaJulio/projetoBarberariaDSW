@@ -141,21 +141,43 @@
 
         <div class="grid grid-2">
           <div class="form-group">
-            <label for="servico">Serviço *</label>
-            <select 
-              id="servico" 
+            <label for="servico-nome">Serviço *</label>
+            <input 
+              type="text" 
+              id="servico-nome" 
               class="form-control" 
-              [(ngModel)]="servicoId"
-              name="servico"
+              [(ngModel)]="servicoPersonalizadoNome"
+              name="servicoNome"
+              placeholder="Ex: Corte Premium"
               required
             >
-              <option [ngValue]="null">Selecione um serviço</option>
-              @for (servico of servicos; track servico.id) {
-                <option [ngValue]="servico.id">
-                  {{ servico.nome }} - R$ {{ formatarPreco(servico.preco) }} ({{ servico.duracao }}min)
-                </option>
-              }
-            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="servico-preco">Valor (R$) *</label>
+            <input 
+              type="text" 
+              id="servico-preco" 
+              class="form-control" 
+              [(ngModel)]="servicoPersonalizadoPreco"
+              name="servicoPreco"
+              placeholder="0,00"
+              required
+              inputmode="decimal"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="servico-duracao">Duração (minutos) *</label>
+            <input 
+              type="number" 
+              id="servico-duracao" 
+              class="form-control" 
+              [(ngModel)]="servicoPersonalizadoDuracao"
+              name="servicoDuracao"
+              min="5"
+              required
+            >
           </div>
 
           <div class="form-group">
@@ -214,23 +236,23 @@
           ></textarea>
         </div>
 
-        @if (getServicoSelecionado() || getBarbeiroSelecionado()) {
+        @if ((servicoPersonalizadoNome || servicoPersonalizadoPreco || servicoPersonalizadoDuracao) || getBarbeiroSelecionado()) {
           <div class="resumo-card card">
             <h3>Resumo do Agendamento</h3>
             <div class="gold-divider"></div>
-            
-            @if (getServicoSelecionado(); as servico) {
+
+            @if (servicoPersonalizadoNome || servicoPersonalizadoPreco || servicoPersonalizadoDuracao) {
               <div class="resumo-item">
                 <span class="label">Serviço:</span>
-                <span class="value">{{ servico.nome }}</span>
+                <span class="value">{{ servicoPersonalizadoNome || 'Não informado' }}</span>
               </div>
               <div class="resumo-item">
                 <span class="label">Valor:</span>
-                <span class="value preco">R$ {{ formatarPreco(servico.preco) }}</span>
+                <span class="value preco">R$ {{ formatarPreco(servicoPersonalizadoPreco) }}</span>
               </div>
               <div class="resumo-item">
                 <span class="label">Duração:</span>
-                <span class="value">{{ servico.duracao }} minutos</span>
+                <span class="value">{{ servicoPersonalizadoDuracao || 0 }} minutos</span>
               </div>
             }
 
@@ -279,6 +301,8 @@
                 </svg>
                 Cliente Cadastrado!
               </span>
+            } @else if (criandoServico) {
+              <span>Cadastrando serviço...</span>
             } @else if (carregando) {
               <span>Agendando...</span>
             } @else {

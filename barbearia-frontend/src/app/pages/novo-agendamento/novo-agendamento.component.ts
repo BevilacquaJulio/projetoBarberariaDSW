@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { BarbeiroService, Barbeiro } from '../../core/services/barbeiro.service';
-import { ServicoService, Servico } from '../../core/services/servico.service';
+import { ServicoService } from '../../core/services/servico.service';
 import { AgendamentoService } from '../../core/services/agendamento.service';
 import { ClienteService, Cliente } from '../../core/services/cliente.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -18,7 +18,6 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class NovoAgendamentoComponent implements OnInit {
   barbeiros: Barbeiro[] = [];
-  servicos: Servico[] = [];
   clientes: Cliente[] = [];
   
   barbeiroId: number | null = null;
@@ -28,6 +27,10 @@ export class NovoAgendamentoComponent implements OnInit {
   dataMinima = '';
   hora = '';
   observacoes = '';
+
+  servicoPersonalizadoNome = '';
+  servicoPersonalizadoPreco = '';
+  servicoPersonalizadoDuracao: number | null = 60;
 
   // Campos para criar novo cliente
   novoClienteNome = '';
@@ -42,6 +45,7 @@ export class NovoAgendamentoComponent implements OnInit {
   sucessoCliente = false;
   carregando = false;
   carregandoCliente = false;
+  criandoServico = false;
 
   // Modal de seleção de clientes
   modalClienteAberto = false;
@@ -59,7 +63,6 @@ export class NovoAgendamentoComponent implements OnInit {
 
   ngOnInit() {
     this.carregarBarbeiros();
-    this.carregarServicos();
     this.setDataMinima();
     
     // Se for admin, carrega lista de clientes
@@ -86,15 +89,6 @@ export class NovoAgendamentoComponent implements OnInit {
     });
   }
 
-  carregarServicos() {
-    this.servicoService.listar().subscribe({
-      next: (response) => {
-        this.servicos = response.servicos;
-      },
-      error: (err) => console.error('Erro ao carregar serviços:', err)
-    });
-  }
-
   carregarClientes() {
     this.clienteService.listar().subscribe({
       next: (response) => {
@@ -115,11 +109,6 @@ export class NovoAgendamentoComponent implements OnInit {
         }
       }
     });
-  }
-
-  getServicoSelecionado(): Servico | undefined {
-    if (!this.servicoId) return undefined;
-    return this.servicos.find(s => s.id === this.servicoId);
   }
 
   getBarbeiroSelecionado(): Barbeiro | undefined {
@@ -235,8 +224,12 @@ export class NovoAgendamentoComponent implements OnInit {
   }
 
   agendar() {
-    if (!this.barbeiroId || !this.servicoId || !this.data || !this.hora) {
+    if (!this.barbeiroId || !this.data || !this.hora) {
       this.erro = 'Preencha todos os campos obrigatórios';
+      return;
+    }
+
+    if (!this.validarServicoPersonalizado()) {
       return;
     }
 
@@ -254,34 +247,66 @@ export class NovoAgendamentoComponent implements OnInit {
       }
     }
 
-    this.carregando = true;
-    this.erro = '';
-    this.sucesso = '';
+    const concluirAgendamento = (servicoId: number) => {
+      this.carregando = true;
+      this.erro = '';
+      this.sucesso = '';
 
-    const dataHora = `${this.data} ${this.hora}:00`;
+      const dataHora = `${this.data} ${this.hora}:00`;
 
-    const agendamento: any = {
-      barbeiro_id: this.barbeiroId,
-      servico_id: this.servicoId,
-      data_hora: dataHora,
-      observacoes: this.observacoes
+      const agendamento: any = {
+        barbeiro_id: this.barbeiroId,
+        servico_id: servicoId,
+        data_hora: dataHora,
+        observacoes: this.observacoes
+      };
+
+      if (this.authService.isAdmin() && this.clienteId) {
+        agendamento.cliente_id = this.clienteId;
+      }
+
+      this.agendamentoService.criar(agendamento).subscribe({
+        next: () => {
+          this.carregando = false;
+          this.sucesso = 'Agendamento criado com sucesso! Redirecionando...';
+          setTimeout(() => {
+            this.router.navigate(['/agendamentos']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.carregando = false;
+          this.erro = err.error?.erro || 'Erro ao criar agendamento';
+        }
+      });
     };
 
-    // Se for admin e selecionou um cliente, inclui cliente_id
-    if (this.authService.isAdmin() && this.clienteId) {
-      agendamento.cliente_id = this.clienteId;
+    if (this.servicoId) {
+      concluirAgendamento(this.servicoId);
+      return;
     }
 
-    this.agendamentoService.criar(agendamento).subscribe({
-      next: () => {
-        this.sucesso = 'Agendamento criado com sucesso! Redirecionando...';
-        setTimeout(() => {
-          this.router.navigate(['/agendamentos']);
-        }, 2000);
+    this.criandoServico = true;
+    const preco = this.converterPreco(this.servicoPersonalizadoPreco);
+    const novoServico = {
+      nome: this.servicoPersonalizadoNome.trim(),
+      preco,
+      duracao: this.servicoPersonalizadoDuracao || 60,
+      descricao: this.observacoes || undefined
+    };
+
+    this.servicoService.criar(novoServico).subscribe({
+      next: (response) => {
+        this.criandoServico = false;
+        this.servicoId = response.id;
+        concluirAgendamento(response.id);
       },
       error: (err) => {
-        this.carregando = false;
-        this.erro = err.error?.erro || 'Erro ao criar agendamento';
+        this.criandoServico = false;
+        if (err.status === 403) {
+          this.erro = 'Apenas administradores podem cadastrar novos serviços. Faça login como administrador.';
+        } else {
+          this.erro = err.error?.erro || 'Erro ao cadastrar o serviço. Verifique os dados e tente novamente.';
+        }
       }
     });
   }
@@ -293,12 +318,42 @@ export class NovoAgendamentoComponent implements OnInit {
   formatarPreco(preco: number | string | undefined): string {
     if (!preco) return '0,00';
     
-    // Converte para número se for string
-    const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
+    let valor: number;
+    if (typeof preco === 'string') {
+      valor = parseFloat(preco.replace(/\./g, '').replace(',', '.'));
+    } else {
+      valor = preco;
+    }
     
     if (isNaN(valor)) return '0,00';
     
     return valor.toFixed(2).replace('.', ',');
+  }
+
+  private validarServicoPersonalizado(): boolean {
+    if (!this.servicoPersonalizadoNome.trim()) {
+      this.erro = 'Informe o nome do serviço';
+      return false;
+    }
+
+    const preco = this.converterPreco(this.servicoPersonalizadoPreco);
+    if (isNaN(preco) || preco <= 0) {
+      this.erro = 'Informe um valor válido para o serviço';
+      return false;
+    }
+
+    if (!this.servicoPersonalizadoDuracao || this.servicoPersonalizadoDuracao <= 0) {
+      this.erro = 'Informe a duração do serviço em minutos';
+      return false;
+    }
+
+    return true;
+  }
+
+  private converterPreco(valor: string): number {
+    if (!valor) return NaN;
+    const normalizado = valor.replace(/\./g, '').replace(',', '.');
+    return parseFloat(normalizado);
   }
 }
 

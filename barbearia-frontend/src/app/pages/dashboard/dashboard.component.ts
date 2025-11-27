@@ -169,7 +169,8 @@ export class DashboardComponent implements OnInit {
       'agendado': 'status-agendado',
       'em_andamento': 'status-andamento',
       'concluido': 'status-concluido',
-      'cancelado': 'status-cancelado'
+      'cancelado': 'status-cancelado',
+      'atrasado': 'status-atrasado'
     };
     return classes[status] || '';
   }
@@ -179,7 +180,8 @@ export class DashboardComponent implements OnInit {
       'agendado': 'Agendado',
       'em_andamento': 'Em Andamento',
       'concluido': 'Concluído',
-      'cancelado': 'Cancelado'
+      'cancelado': 'Cancelado',
+      'atrasado': 'Atrasado'
     };
     return labels[status] || status;
   }
@@ -192,12 +194,39 @@ export class DashboardComponent implements OnInit {
     return this.agendamentos.filter(a => a.status === 'agendado').length;
   }
 
+  getAgendamentosAtrasados(): number {
+    return this.agendamentos.filter(a => this.isAtrasado(a)).length;
+  }
+
+  private isAtrasado(agendamento: Agendamento): boolean {
+    if (!agendamento?.data_hora) return false;
+
+    const status = (agendamento.status || '').toLowerCase();
+    if (status === 'atrasado') return true;
+
+    const elegivel = status === 'agendado' || status === 'em_andamento';
+    if (!elegivel) return false;
+
+    const dataNormalizada = agendamento.data_hora.includes(' ')
+      ? agendamento.data_hora.replace(' ', 'T')
+      : agendamento.data_hora;
+
+    const data = new Date(dataNormalizada);
+    if (isNaN(data.getTime())) return false;
+
+    return data.getTime() < new Date().getTime();
+  }
+
   novoAgendamento() {
     this.router.navigate(['/novo-agendamento']);
   }
 
   verTodos() {
     this.router.navigate(['/agendamentos']);
+  }
+
+  verConcluidos() {
+    this.router.navigate(['/agendamentos'], { queryParams: { focus: 'concluidos' } });
   }
 
   formatarPreco(preco: number | string | undefined): string {

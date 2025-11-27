@@ -7,7 +7,7 @@ const autenticador = getAuthentication()
 
 endpoints.post('/servico', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Apenas administradores podem cadastrar serviços' 
       })
@@ -53,7 +53,7 @@ endpoints.get('/servicos', async (req, resp) => {
 
 endpoints.get('/servicos/todos', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Acesso negado' 
       })
@@ -91,7 +91,7 @@ endpoints.get('/servico/:id', async (req, resp) => {
 
 endpoints.put('/servico/:id', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Apenas administradores podem alterar serviços' 
       })
@@ -128,7 +128,7 @@ endpoints.put('/servico/:id', autenticador, async (req, resp) => {
 
 endpoints.delete('/servico/:id', autenticador, async (req, resp) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'administrador') {
       return resp.status(403).send({ 
         erro: 'Apenas administradores podem deletar serviços' 
       })

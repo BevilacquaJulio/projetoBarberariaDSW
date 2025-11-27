@@ -28,5 +28,9 @@ export class ServicoService {
   buscar(id: number): Observable<Servico> {
     return this.http.get<Servico>(`${environment.apiUrl}/servico/${id}`);
   }
+
+  criar(servico: { nome: string; descricao?: string; preco: number; duracao: number; ativo?: boolean }): Observable<{ mensagem: string; id: number }> {
+    return this.http.post<{ mensagem: string; id: number }>(`${environment.apiUrl}/servico`, servico);
+  }
 }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { AgendamentoService, Agendamento } from '../../core/services/agendamento.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,17 +14,34 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class AgendamentosComponent implements OnInit {
   agendamentos: Agendamento[] = [];
+  agendamentosConcluidos: Agendamento[] = [];
+  agendamentosAgendados: Agendamento[] = [];
+  agendamentosAtrasados: Agendamento[] = [];
+  agendamentosCancelados: Agendamento[] = [];
+  agendamentosVisiveis: Agendamento[] = [];
   carregando = true;
   erro = '';
   sucesso = '';
+  selectedTab: AbaAgendamento = 'concluidos';
+  private focusDestino: AbaAgendamento | null = null;
 
   constructor(
     private agendamentoService: AgendamentoService,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      const focus = params.get('focus') as AbaAgendamento | null;
+      if (focus && this.selectedTab !== focus) {
+        this.focusDestino = focus;
+        this.selectedTab = focus;
+        this.atualizarAgendamentosVisiveis();
+        this.scrollParaLista();
+      }
+    });
     this.carregarAgendamentos();
   }
 
@@ -46,6 +63,8 @@ export class AgendamentosComponent implements OnInit {
         console.log('Agendamentos recebidos (página agendamentos):', response);
         this.agendamentos = response.agendamentos || [];
         console.log('Total de agendamentos carregados:', this.agendamentos.length);
+        this.atualizarListasFiltradas();
+        this.verificarFocusDestino();
         this.carregando = false;
       },
       error: (err) => {
@@ -83,24 +102,58 @@ export class AgendamentosComponent implements OnInit {
     });
   }
 
-  getStatusClass(status: string): string {
-    const classes: any = {
+  getStatusClass(agendamento: Agendamento): string {
+    if (this.isAtrasado(agendamento)) {
+      return 'status-atrasado';
+    }
+
+    const status = (agendamento.status || '').toLowerCase();
+    const classes: Record<string, string> = {
       'agendado': 'status-agendado',
       'em_andamento': 'status-andamento',
       'concluido': 'status-concluido',
-      'cancelado': 'status-cancelado'
+      'cancelado': 'status-cancelado',
+      'atrasado': 'status-atrasado'
     };
+
     return classes[status] || '';
   }
 
-  getStatusLabel(status: string): string {
-    const labels: any = {
+  getStatusLabel(agendamento: Agendamento): string {
+    if (this.isAtrasado(agendamento)) {
+      return 'Atrasado';
+    }
+
+    const status = (agendamento.status || '').toLowerCase();
+    const labels: Record<string, string> = {
       'agendado': 'Agendado',
       'em_andamento': 'Em Andamento',
       'concluido': 'Concluído',
-      'cancelado': 'Cancelado'
+      'cancelado': 'Cancelado',
+      'atrasado': 'Atrasado'
     };
-    return labels[status] || status;
+
+    return labels[status] || (agendamento.status || '');
+  }
+
+  private isAtrasado(agendamento: Agendamento): boolean {
+    if (!agendamento?.data_hora) return false;
+
+    const status = (agendamento.status || '').toLowerCase();
+    if (status === 'atrasado') return true;
+
+    let dataAgendamento = agendamento.data_hora;
+    if (dataAgendamento.includes(' ')) {
+      dataAgendamento = dataAgendamento.replace(' ', 'T');
+    }
+
+    const data = new Date(dataAgendamento);
+    if (isNaN(data.getTime())) return false;
+
+    const agora = new Date();
+    const statusElegivel = status === 'agendado' || status === 'em_andamento';
+    const umaHoraMs = 60 * 60 * 1000;
+    return statusElegivel && (data.getTime() + umaHoraMs) < agora.getTime();
   }
 
   cancelarAgendamento(id: number | undefined) {
@@ -145,6 +198,23 @@ export class AgendamentosComponent implements OnInit {
     });
   }
 
+  concluirAgendamento(id: number | undefined) {
+    if (!id) return;
+
+    this.agendamentoService.alterarStatus(id, 'concluido').subscribe({
+      next: () => {
+        this.sucesso = 'Agendamento marcado como concluído!';
+        this.carregarAgendamentos();
+        setTimeout(() => this.sucesso = '', 3000);
+      },
+      error: (err) => {
+        this.erro = 'Erro ao concluir agendamento';
+        console.error(err);
+        setTimeout(() => this.erro = '', 3000);
+      }
+    });
+  }
+
   novoAgendamento() {
     this.router.navigate(['/novo-agendamento']);
   }
@@ -167,6 +237,70 @@ export class AgendamentosComponent implements OnInit {
     return isAdminUser || status === 'agendado';
   }
 
+  podeConcluir(status: string): boolean {
+    const statusNormalizado = status?.toLowerCase();
+    return statusNormalizado === 'agendado' || statusNormalizado === 'em_andamento';
+  }
+
+  setTab(tab: AbaAgendamento) {
+    if (this.selectedTab === tab) return;
+    this.selectedTab = tab;
+    this.atualizarAgendamentosVisiveis();
+    this.scrollParaLista();
+  }
+
+  private getAgendamentosFiltrados(): Agendamento[] {
+    switch (this.selectedTab) {
+      case 'agendados':
+        return this.agendamentosAgendados;
+      case 'atrasados':
+        return this.agendamentosAtrasados;
+      case 'concluidos':
+        return this.agendamentosConcluidos;
+      case 'cancelados':
+        return this.agendamentosCancelados;
+      default:
+        return this.agendamentosAgendados;
+    }
+  }
+
+  private scrollParaLista() {
+    const listContainer = document.getElementById('agendamentos-list-container');
+    if (listContainer) {
+      listContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  private atualizarListasFiltradas() {
+    this.agendamentosConcluidos = this.agendamentos.filter(
+      a => (a.status || '').toLowerCase() === 'concluido'
+    );
+
+    this.agendamentosAgendados = this.agendamentos.filter(a => {
+      const status = (a.status || '').toLowerCase();
+      return status === 'agendado' || status === 'em_andamento';
+    });
+
+    this.agendamentosAtrasados = this.agendamentos.filter(a => this.isAtrasado(a));
+
+    this.agendamentosCancelados = this.agendamentos.filter(
+      a => (a.status || '').toLowerCase() === 'cancelado'
+    );
+
+    this.atualizarAgendamentosVisiveis();
+  }
+
+  private atualizarAgendamentosVisiveis() {
+    this.agendamentosVisiveis = this.getAgendamentosFiltrados();
+  }
+
+  private verificarFocusDestino() {
+    if (this.focusDestino && this.getAgendamentosFiltrados().length) {
+      setTimeout(() => this.scrollParaLista(), 150);
+      this.focusDestino = null;
+    }
+  }
+
   formatarPreco(preco: number | string | undefined): string {
     if (!preco) return '0,00';
     
@@ -178,4 +312,6 @@ export class AgendamentosComponent implements OnInit {
     return valor.toFixed(2).replace('.', ',');
   }
 }
+
+type AbaAgendamento = 'agendados' | 'atrasados' | 'concluidos' | 'cancelados';
 

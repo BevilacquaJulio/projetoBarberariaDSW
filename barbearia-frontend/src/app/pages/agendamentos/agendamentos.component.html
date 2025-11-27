@@ -37,16 +37,44 @@
           </button>
         </div>
       } @else {
+        <div class="tabs-container" id="agendamentos-list-container">
+          <button class="tab-button" [class.active]="selectedTab === 'concluidos'" (click)="setTab('concluidos')">
+            Concluídos
+            <span class="tab-count">{{ agendamentosConcluidos.length }}</span>
+          </button>
+          <button class="tab-button" [class.active]="selectedTab === 'agendados'" (click)="setTab('agendados')">
+            Agendados
+            <span class="tab-count">{{ agendamentosAgendados.length }}</span>
+          </button>
+          <button class="tab-button" [class.active]="selectedTab === 'atrasados'" (click)="setTab('atrasados')">
+            Atrasados
+            <span class="tab-count">{{ agendamentosAtrasados.length }}</span>
+          </button>
+          <button class="tab-button" [class.active]="selectedTab === 'cancelados'" (click)="setTab('cancelados')">
+            Cancelados
+            <span class="tab-count">{{ agendamentosCancelados.length }}</span>
+          </button>
+        </div>
+
+        @if (agendamentosVisiveis.length === 0) {
+          <div class="empty-state card text-center">
+            <h2>Nenhum agendamento nesta aba</h2>
+            <p>Assim que houver registros em "{{ selectedTab }}", eles aparecerão aqui.</p>
+          </div>
+        } @else {
         <div class="agendamentos-list">
-          @for (agendamento of agendamentos; track agendamento.id) {
+            @for (agendamento of agendamentosVisiveis; track agendamento.id) {
             <div class="card agendamento-card">
               <div class="agendamento-header">
                 <div>
                   <h3>{{ agendamento.servico_nome }}</h3>
                   <p class="data">📅 {{ formatarData(agendamento.data_hora) }}</p>
                 </div>
-                <span class="status-badge" [ngClass]="getStatusClass(agendamento.status || '')">
-                  {{ getStatusLabel(agendamento.status || '') }}
+                <span 
+                  class="status-badge" 
+                  [ngClass]="getStatusClass(agendamento)"
+                >
+                  {{ getStatusLabel(agendamento) }}
                 </span>
               </div>
 
@@ -79,8 +107,13 @@
                 }
               </div>
 
-              @if (podeCancelar(agendamento.status || '') || podeDeletar(agendamento.status || '')) {
+                @if (podeCancelar(agendamento.status || '') || podeDeletar(agendamento.status || '') || podeConcluir(agendamento.status || '')) {
                 <div class="agendamento-footer">
+                    @if (podeConcluir(agendamento.status || '')) {
+                      <button class="btn btn-success btn-sm" (click)="concluirAgendamento(agendamento.id)">
+                        Concluir
+                      </button>
+                    }
                   @if (podeCancelar(agendamento.status || '')) {
                     <button class="btn btn-secondary btn-sm" (click)="cancelarAgendamento(agendamento.id)">
                       Cancelar
@@ -96,6 +129,7 @@
             </div>
           }
         </div>
+        }
       }
     }
   </div>

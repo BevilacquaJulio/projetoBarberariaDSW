@@ -89,7 +89,7 @@ class ImagemController {
     // Endpoint para atualizar metadados da imagem (admin)
     async atualizarImagem(req, res) {
         const user = req.user;
-        if (!user || user.role !== 'admin') {
+        if (!user || (user.role !== 'admin' && user.role !== 'administrador')) {
             return res.status(403).json({ error: 'Acesso negado' });
         }
         const { id } = req.params;
